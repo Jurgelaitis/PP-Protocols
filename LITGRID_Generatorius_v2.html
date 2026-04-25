@@ -316,35 +316,33 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;mi
         <div class="form-grid">
           <div class="fg">
             <label>Įsakymo data</label>
-            <input type="text" id="new-kom-date" value="2024 m. spalio 15 d.">
+            <input type="text" id="new-kom-date" placeholder="pvz.: 2026 m. sausio 10 d.">
           </div>
           <div class="fg">
             <label>Įsakymo Nr.</label>
-            <input type="text" id="new-kom-nr" value="24IS-187">
+            <input type="text" id="new-kom-nr" placeholder="pvz.: 26IS-001">
           </div>
         </div>
         <div class="form-grid full">
           <div class="fg">
             <label>Įsakymo pavadinimas</label>
-            <input type="text" id="new-kom-name" value="Dėl pirkimų komisijos sudarymo">
+            <input type="text" id="new-kom-name" placeholder="pvz.: Dėl pirkimų komisijos sudarymo">
           </div>
         </div>
         <div class="form-grid">
           <div class="fg">
             <label>Komisijos pirmininkas (-ė)</label>
-            <input type="text" id="new-kom-chair" value="Arūnas Jurgelaitis">
+            <input type="text" id="new-kom-chair" placeholder="Vardas Pavardė">
           </div>
           <div class="fg">
             <label>Posėdžio sekretorius (-ė)</label>
-            <input type="text" id="new-kom-sec" value="Tomas Jakubauskas">
+            <input type="text" id="new-kom-sec" placeholder="Vardas Pavardė">
           </div>
         </div>
         <div class="form-grid full">
           <div class="fg">
             <label>Komisijos nariai</label>
             <div id="new-kom-members">
-              <div class="member-row" style="display:flex;gap:6px;margin-bottom:6px"><input type="text" class="narys" value="Aušra Želvienė" style="flex:1;padding:7px 10px;border:1px solid #cbd5e0;border-radius:6px;font-size:13px"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">✕</button></div>
-              <div class="member-row" style="display:flex;gap:6px;margin-bottom:6px"><input type="text" class="narys" value="Giedrė Baltušytė" style="flex:1;padding:7px 10px;border:1px solid #cbd5e0;border-radius:6px;font-size:13px"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">✕</button></div>
             </div>
             <button class="btn-add" onclick="addMember()" style="margin-top:4px">+ Pridėti narį</button>
           </div>
@@ -646,15 +644,21 @@ function autoCalcPartVat(input) {
   if (v && v > 0) inc.value = (v * 1.21).toFixed(2);
   else if (!v) inc.value = '';
 }
+function updatePartLabels() {
+  [...document.querySelectorAll('#new-parts-list > div')].forEach((row, i) => {
+    const lbl = row.querySelector('label');
+    if (lbl) lbl.textContent = `${i + 1} dalis: pavadinimas`;
+  });
+}
 function addNewPart() {
   const list = document.getElementById('new-parts-list');
   const n = list.children.length + 1;
   const d = document.createElement('div');
   d.className = 'form-grid thirds';
-  d.style.marginBottom = '8px';
+  d.style.cssText = 'margin-bottom:8px;align-items:flex-end;gap:8px';
   d.innerHTML = `<div class="fg"><label>${n} dalis: pavadinimas</label><input type="text" class="part-name" placeholder="Dalies pavadinimas"></div>
     <div class="fg"><label>Be PVM (EUR)</label><input type="number" class="part-ex" step="0.01" placeholder="0.00" oninput="autoCalcPartVat(this)"></div>
-    <div class="fg"><label>Su PVM (EUR)</label><input type="number" class="part-inc" step="0.01" placeholder="0.00"></div>`;
+    <div class="fg" style="display:flex;gap:6px;align-items:flex-end"><div style="flex:1"><label>Su PVM (EUR)</label><input type="number" class="part-inc" step="0.01" placeholder="0.00" style="width:100%"></div><button class="btn btn-sm btn-danger" style="margin-bottom:1px" onclick="this.closest('[class*=form-grid]').remove();updatePartLabels()">✕</button></div>`;
   list.appendChild(d);
 }
 function addMember() {
@@ -673,7 +677,18 @@ function newPkStep2() {
   const nr = document.getElementById('new-pk-nr').value.trim();
   if (!nr) { toast('Įveskite pirkimo kortelės numerį', 'err'); return; }
   if (!document.getElementById('new-pk-name').value.trim()) { toast('Įveskite pirkimo pavadinimą', 'err'); return; }
+  if (!document.getElementById('new-pk-date').value) { toast('Įveskite pirkimo kortelės datą', 'err'); return; }
   if (getProcurement(nr)) { toast('Pirkimas su šiuo numeriu jau egzistuoja', 'err'); return; }
+  // Dalių sumos validacija
+  if (document.getElementById('new-pk-parts').checked) {
+    const valEx = parseFloat(document.getElementById('new-pk-val-ex').value)||0;
+    const parts = [...document.querySelectorAll('#new-parts-list > div')];
+    const partsSum = parts.reduce((s, r) => s + (parseFloat(r.querySelector('.part-ex').value)||0), 0);
+    if (parts.length > 0 && Math.abs(partsSum - valEx) > 0.01) {
+      toast(`Dalių suma (${partsSum.toFixed(2)} EUR) nesutampa su pirkimo verte (${valEx.toFixed(2)} EUR). Pataisykite prieš tęsdami.`, 'err');
+      return;
+    }
+  }
   document.getElementById('new-step1').style.display = 'none';
   document.getElementById('new-step2').style.display = 'block';
   document.getElementById('step1-ind').className = 'step done';
