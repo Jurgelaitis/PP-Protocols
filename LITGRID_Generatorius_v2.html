@@ -631,12 +631,20 @@ function deleteProcurement() {
 function autoCalcVat() {
   const v = parseFloat(document.getElementById('new-pk-val-ex').value);
   const inc = document.getElementById('new-pk-val-inc');
-  if (v && !inc.value) inc.value = (v * 1.21).toFixed(2);
+  if (v && v > 0) inc.value = (v * 1.21).toFixed(2);
+  else if (!v) inc.value = '';
 }
 function toggleNewParts() {
   const c = document.getElementById('new-parts-container');
   c.style.display = document.getElementById('new-pk-parts').checked ? 'block' : 'none';
   if (document.getElementById('new-parts-list').children.length === 0) addNewPart();
+}
+function autoCalcPartVat(input) {
+  const row = input.closest('.form-grid');
+  const inc = row.querySelector('.part-inc');
+  const v = parseFloat(input.value);
+  if (v && v > 0) inc.value = (v * 1.21).toFixed(2);
+  else if (!v) inc.value = '';
 }
 function addNewPart() {
   const list = document.getElementById('new-parts-list');
@@ -645,7 +653,7 @@ function addNewPart() {
   d.className = 'form-grid thirds';
   d.style.marginBottom = '8px';
   d.innerHTML = `<div class="fg"><label>${n} dalis: pavadinimas</label><input type="text" class="part-name" placeholder="Dalies pavadinimas"></div>
-    <div class="fg"><label>Be PVM (EUR)</label><input type="number" class="part-ex" step="0.01" placeholder="0.00"></div>
+    <div class="fg"><label>Be PVM (EUR)</label><input type="number" class="part-ex" step="0.01" placeholder="0.00" oninput="autoCalcPartVat(this)"></div>
     <div class="fg"><label>Su PVM (EUR)</label><input type="number" class="part-inc" step="0.01" placeholder="0.00"></div>`;
   list.appendChild(d);
 }
@@ -688,12 +696,22 @@ function newPkStep3() {
 function saveProcurement() {
   const id = document.getElementById('new-pk-nr').value.trim();
   const kval = document.querySelector('input[name="new-kval"]:checked').value;
-  const parts = document.getElementById('new-pk-parts').checked
+  const partsEnabled = document.getElementById('new-pk-parts').checked;
+  const parts = partsEnabled
     ? [...document.querySelectorAll('#new-parts-list > div')].map(r => ({
         name: r.querySelector('.part-name').value,
         ex: parseFloat(r.querySelector('.part-ex').value)||0,
         inc: parseFloat(r.querySelector('.part-inc').value)||0
       })) : [];
+  const valEx = parseFloat(document.getElementById('new-pk-val-ex').value)||0;
+  if (partsEnabled && parts.length > 0) {
+    const partsSum = parts.reduce((s, p) => s + p.ex, 0);
+    const diff = Math.abs(partsSum - valEx);
+    if (diff > 0.01) {
+      toast(`Klaidinga suma: dalių suma (${partsSum.toFixed(2)} EUR) nesutampa su pirkimo verte (${valEx.toFixed(2)} EUR). Pataisykite prieš išsaugodami.`, 'err');
+      return;
+    }
+  }
   const pk = {
     id,
     name: document.getElementById('new-pk-name').value.trim(),
