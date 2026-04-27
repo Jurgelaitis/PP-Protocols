@@ -136,6 +136,21 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;mi
 .step{flex:1;text-align:center;padding:8px 4px;font-size:11px;font-weight:600;color:#a0aec0;border-bottom:2px solid #e2e8f0;transition:all .2s}
 .step.active{color:#2d5f8a;border-bottom-color:#2d5f8a}
 .step.done{color:#276749;border-bottom-color:#68d391}
+
+.preview-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
+.preview-sheet{background:#fff;width:100%;max-width:820px;box-shadow:0 8px 40px rgba(0,0,0,.25);border-radius:4px;display:flex;flex-direction:column}
+.preview-topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#1a3566;border-radius:4px 4px 0 0}
+.preview-topbar span{color:#fff;font-weight:600;font-size:14px}
+.preview-topbar-actions{display:flex;gap:8px}
+.preview-body{padding:28px 36px;font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4}
+.preview-body table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:10.5pt}
+.preview-body td{padding:4px 7px;vertical-align:top;border:1px solid #000}
+.preview-body td.hdr{background:#d9e2f3;font-weight:700;font-size:9pt;text-transform:uppercase;letter-spacing:.4px}
+.preview-doc-title{text-align:center;font-weight:700;font-size:13pt;margin-bottom:4px}
+.preview-doc-sub{text-align:center;font-size:11pt;margin-bottom:2px}
+.preview-doc-city{text-align:center;font-size:11pt;margin-bottom:18px}
+.preview-logo-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid #1a3566;margin-bottom:14px}
+.preview-logo-text{font-size:8.5pt;color:#555;text-align:right;line-height:1.5}
 </style>
 </head>
 <body>
@@ -405,7 +420,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;mi
     <div class="left">
       <button class="btn btn-secondary" id="proto-back-btn2">← Atgal</button>
     </div>
-    <button class="btn btn-primary" id="proto-gen-btn" onclick="generateCurrentProtocol()">⬇ Generuoti .docx</button>
+    <button class="btn btn-secondary" id="proto-preview-btn" onclick="previewProtocol()" style="margin-right:8px">👁 Peržiūrėti</button><button class="btn btn-primary" id="proto-gen-btn" onclick="generateCurrentProtocol()">⬇ Generuoti .docx</button>
   </div>
 </div>
 
@@ -414,6 +429,152 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;mi
 // DATA LAYER
 // ════════════════════════════════════════════════════════
 const STORE_KEY = 'litgrid_procurements_v2';
+
+const LOGO_B64 = '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';
+
+function previewProtocol() {
+  const pk = getProcurement(currentPkId);
+  const seq = getSequence(pk.type);
+  const proto = seq.find(p => p.id === currentProtoId);
+  const posDate = document.getElementById('pf-date').value || '____-__-__';
+  const posNr   = document.getElementById('pf-nr').value || '___';
+  const vienbalsiai = document.getElementById('pf-vienbalsiai')?.checked ?? true;
+
+  const d = pk;
+  const K = d.komisija || {};
+  const fmtD = (ds) => {
+    if (!ds) return '___';
+    const p = ds.split('-'); if(p.length<3) return ds;
+    const mn=['sausio','vasario','kovo','balandžio','gegužės','birželio','liepos','rugpjūčio','rugsėjo','spalio','lapkričio','gruodžio'];
+    return `${parseInt(p[0])} m. ${mn[parseInt(p[1])-1]} ${parseInt(p[2])} d.`;
+  };
+  const money = v => typeof v==='number' ? v.toLocaleString('lt-LT',{minimumFractionDigits:2,maximumFractionDigits:2}) : (v||'0,00');
+  const chk = v => v ? '☑' : '☐';
+
+  // Build header rows HTML (mirrors Word headerRows)
+  const members = (K.members||[]).join(', ');
+  const allMembers = [K.chair ? `${K.chair} (pirmininkas)` : '', K.secretary ? `${K.secretary} (sekretorius)` : '', ...( K.members||[] )].filter(Boolean).join(', ');
+
+  let partsHtml = '';
+  if (d.parts_enabled && d.parts && d.parts.length) {
+    partsHtml = d.parts.map((p,i) => `<br>${i+1} dalis: ${p.name} – ${money(p.ex)} EUR be PVM; ${money(p.inc)} EUR su PVM.`).join('');
+  }
+
+  const typeMap = {
+    atviras_tarptautinis:'Tarptautinis atviras konkursas',
+    atviras_supaprastintas:'Supaprastintas atviras konkursas',
+    derybos_tarptautinis:'Tarptautinis skelbiamos derybos',
+    derybos_supaprastintas:'Supaprastintas skelbiamos derybos',
+    neskelbiamos_tarptautinis:'Tarptautinis neskelbiamos derybos',
+    neskelbiamos_supaprastintas:'Supaprastintas neskelbiamos derybos'
+  };
+
+  const chanHtml = `${chk(d.channel==='cvp')} CVP IS priemonėmis${d.channel==='cvp'&&d.cvp_nr?' ('+d.cvp_nr+')':''} &nbsp;/&nbsp; ${chk(d.channel==='email')} El. paštu`;
+
+  const headerHtml = `
+    <table>
+      <tr><td class="hdr" colspan="2">5. Informacija apie pirkimo objektą</td></tr>
+      <tr><td colspan="2"><b>Pirkimo pavadinimas:</b> ${d.name} (toliau – Pirkimas).<br>
+        <b>Pirkimo kortelės registravimo data ir numeris:</b> ${d.korteles_data||'___'}, Nr. ${d.id}.<br>
+        <b>Numatoma Pirkimo vertė:</b> ${money(d.val_ex)} Eur be PVM; ${money(d.val_inc)} Eur su PVM.<br>
+        <b>${chk(d.obj_type==='prekes')} Prekių tiekimo / ${chk(d.obj_type==='paslaugos')} paslaugų teikimo / ${chk(d.obj_type==='darbai')} darbų atlikimo terminas:</b> ${d.terminas||'___'}.<br>
+        ${chk(d.parts_enabled)} Pirkimo objektas skaidomas į dalis:${partsHtml}<br>
+        ${chk(!d.parts_enabled)} Pirkimo objektas neskaidomas į dalis.<br>
+        Pirkimo objektas nėra įtrauktas į CPO katalogą.
+      </td></tr>
+      <tr><td class="hdr" colspan="2">1. Iniciatorius</td></tr>
+      <tr><td colspan="2">UAB „Litgrid" (juridinio asmens kodas 302564383, buveinės adresas Juozapavičiaus g. 13, Vilnius).</td></tr>
+      <tr><td class="hdr" colspan="2">2. Pirkimo tipas ir vertės kategorija</td></tr>
+      <tr><td colspan="2"><b>Pirkimo tipas:</b> ${typeMap[d.type]||d.type}.<br>
+        <b>Vertinimo kriterijus:</b> ${d.eval_criteria||'___'}.<br>
+        <b>Pirkimo vertės kategorija:</b> ${d.val_cat||'___'}.</td></tr>
+      <tr><td class="hdr" colspan="2">3. Komisija</td></tr>
+      <tr><td colspan="2">Komisija sudaryta ${K.date||'___'} įsakymu Nr. ${K.nr||'___'} „${K.name||'___'}".<br>
+        Komisijos sudėtis: ${allMembers||'___'}.</td></tr>
+      <tr><td class="hdr" colspan="2">4. Pirkimo skelbimo kanalas</td></tr>
+      <tr><td colspan="2">${chanHtml}</td></tr>
+      <tr><td class="hdr" colspan="2">Kvalifikacijos reikalavimai</td></tr>
+      <tr><td colspan="2">${chk(d.kval==='min'||d.kval==='abu')} Minimalūs &nbsp; ${chk(d.kval==='isp'||d.kval==='abu')} Išplėstiniai</td></tr>
+    </table>`;
+
+  // Protocol-specific section
+  const agendaHtml = buildPreviewAgenda(pk, proto, posDate, vienbalsiai);
+
+  // Signature row
+  const sigHtml = `
+    <table>
+      <tr>
+        <td style="width:55%;border:none"><b>Komisijos pirmininkas (-ė)</b><br><br>${K.chair||'___'}</td>
+        <td style="width:45%;border:none;text-align:right"><b>Sekretorius (-ė)</b><br><br>${K.secretary||'___'}</td>
+      </tr>
+    </table>`;
+
+  const fullHtml = `
+    <div class="preview-logo-row">
+      <img src="data:image/png;base64,${LOGO_B64}" style="height:38px">
+      <div class="preview-logo-text">UAB „Litgrid"<br>Juozapavičiaus g. 13, Vilnius<br>www.litgrid.eu</div>
+    </div>
+    <div class="preview-doc-title">PIRKIMŲ KOMISIJOS POSĖDŽIO PROTOKOLAS</div>
+    <div class="preview-doc-sub">${fmtD(posDate)} Nr. ${posNr||'___'}</div>
+    <div class="preview-doc-city">Vilnius</div>
+    ${headerHtml}
+    ${agendaHtml}
+    ${sigHtml}
+  `;
+
+  document.getElementById('preview-body-content').innerHTML = fullHtml;
+  document.getElementById('preview-overlay').style.display = 'flex';
+  document.getElementById('preview-overlay').scrollTop = 0;
+}
+
+function closePreview() {
+  document.getElementById('preview-overlay').style.display = 'none';
+}
+
+function buildPreviewAgenda(pk, proto, posDate, vienbalsiai) {
+  // Simplified agenda preview — shows protocol title + key fields
+  const d = pk;
+  const money = v => typeof v==='number' ? v.toLocaleString('lt-LT',{minimumFractionDigits:2,maximumFractionDigits:2}) : (v||'0,00');
+  const chk = v => v ? '☑' : '☐';
+
+  // Collect supplier data from form
+  const suppliers = [...document.querySelectorAll('.supp-row')].map(r => ({
+    name: r.querySelector('.supp-name')?.value||'',
+    received: r.querySelector('.supp-recv')?.value||'Taip',
+    note: r.querySelector('.supp-note')?.value||''
+  })).filter(s=>s.name);
+
+  const tiekojai = [...document.querySelectorAll('.tiek-row')].map(r => ({
+    name: r.querySelector('.tiek-name')?.value||'',
+    ex: parseFloat(r.querySelector('.tiek-ex')?.value)||0,
+    inc: parseFloat(r.querySelector('.tiek-inc')?.value)||0,
+    tech: r.querySelector('.tiek-tech')?.value||'',
+    note: r.querySelector('.tiek-note')?.value||''
+  })).filter(t=>t.name);
+
+  let rows = `<table>
+    <tr><td class="hdr" colspan="2">DARBOTVARKĖ: ${proto.name}</td></tr>`;
+
+  // Show supplier/tenderer info if present
+  if (suppliers.length > 0) {
+    rows += `<tr><td colspan="2"><b>Gauti pasiūlymai / paraiškos (${suppliers.length}):</b><table style="width:100%;margin-top:6px">
+      <tr><td style="font-weight:700;width:40px">Nr.</td><td style="font-weight:700">Tiekėjas</td><td style="font-weight:700">Gauta</td><td style="font-weight:700">Pastabos</td></tr>
+      ${suppliers.map((s,i)=>`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.received}</td><td>${s.note||'—'}</td></tr>`).join('')}
+    </table></td></tr>`;
+  }
+
+  if (tiekojai.length > 0) {
+    rows += `<tr><td colspan="2"><b>Pasiūlymų kainos:</b><table style="width:100%;margin-top:6px">
+      <tr><td style="font-weight:700;width:40px">Nr.</td><td style="font-weight:700">Tiekėjas</td><td style="font-weight:700">Be PVM (EUR)</td><td style="font-weight:700">Su PVM (EUR)</td></tr>
+      ${tiekojai.map((t,i)=>`<tr><td>${i+1}</td><td>${t.name}</td><td>${money(t.ex)}</td><td>${money(t.inc)}</td></tr>`).join('')}
+    </table></td></tr>`;
+  }
+
+  rows += `<tr><td colspan="2"><b>Sprendimai priimti:</b> ${vienbalsiai ? 'vienbalsiai' : 'balsavimo būdu'}.</td></tr>`;
+  rows += `</table>`;
+  return rows;
+}
+
 
 function loadStore() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }
@@ -1333,7 +1494,16 @@ async function buildDocx(pk, proto, posDate, posNr, vienbalsiai) {
     styles:{default:{document:{run:{font:FONT,size:SZ}}}},
     sections:[{
       properties:{page:{size:{width:PW,height:16838},margin:{top:MARGIN,right:MARGIN,bottom:MARGIN,left:MARGIN}}},
-      headers:{default:new Header({children:[new Paragraph({children:[n(`LITGRID AB  |  Pirkim\u0173 komisijos pos\u0117d\u017eio protokolas`,16)],alignment:AlignmentType.RIGHT})]})},
+      headers:{default:new Header({children:[
+        new Paragraph({
+          children:[
+            new ImageRun({type:'png', data:Uint8Array.from(atob(LOGO_B64),c=>c.charCodeAt(0)), transformation:{width:126,height:30}}),
+            new TextRun({text:'  LITGRID AB  |  Pirkim\u0173 komisijos pos\u0117d\u017eio protokolas', font:'Arial', size:16, color:'555555'})
+          ],
+          border:{bottom:{style:BorderStyle.SINGLE,size:4,color:'1a3566',space:4}},
+          spacing:{after:0}
+        })
+      ]})},
       footers:{default:new Footer({children:[new Paragraph({children:[n('Puslapis ',16),new TextRun({children:[PageNumber.CURRENT],font:FONT,size:16})],alignment:AlignmentType.CENTER})]})},
       children:[
         new Paragraph({children:[b('PIRKIM\u0172 KOMISIJOS POS\u0116D\u017dIO PROTOKOLAS',24)],alignment:AlignmentType.CENTER,spacing:{after:200}}),
@@ -1497,5 +1667,18 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
 // ════════════════════════════════════════════════════════
 renderDashboard();
 </script>
+
+<div id="preview-overlay" class="preview-overlay" style="display:none" onclick="if(event.target===this)closePreview()">
+  <div class="preview-sheet">
+    <div class="preview-topbar">
+      <span>👁 Protokolo peržiūra (prieš generuojant)</span>
+      <div class="preview-topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="closePreview()">✕ Uždaryti</button>
+        <button class="btn btn-primary btn-sm" onclick="closePreview();generateCurrentProtocol()">⬇ Generuoti .docx</button>
+      </div>
+    </div>
+    <div class="preview-body" id="preview-body-content"></div>
+  </div>
+</div>
 </body>
 </html>
