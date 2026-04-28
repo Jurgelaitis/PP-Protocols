@@ -236,8 +236,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;mi
             </div>
           </div>
           <div class="fg">
-            <label>Tiekimo/teikimo terminas</label>
-            <input type="text" id="new-pk-terminas" placeholder="pvz.: 24 mėnesiai nuo sutarties">
+            <label>Sutarties trukmė (mėn.)</label>
+            <input type="number" id="new-pk-terminas" min="1" step="1" placeholder="pvz.: 24">
           </div>
         </div>
         <div class="form-grid full">
@@ -477,7 +477,7 @@ function previewProtocol() {
       <tr><td colspan="2"><b>Pirkimo pavadinimas:</b> ${d.name} (toliau – Pirkimas).<br>
         <b>Pirkimo kortelės registravimo data ir numeris:</b> ${d.korteles_data||'___'}, Nr. ${d.id}.<br>
         <b>Numatoma Pirkimo vertė:</b> ${money(d.val_ex)} Eur be PVM; ${money(d.val_inc)} Eur su PVM.<br>
-        <b>${chk(d.obj_type==='prekes')} Prekių tiekimo / ${chk(d.obj_type==='paslaugos')} paslaugų teikimo / ${chk(d.obj_type==='darbai')} darbų atlikimo terminas:</b> ${d.terminas||'___'}.<br>
+        <b>${chk(d.obj_type==='prekes')} Prekių tiekimo / ${chk(d.obj_type==='paslaugos')} paslaugų teikimo / ${chk(d.obj_type==='darbai')} darbų atlikimo terminas:</b> ${d.terminas ? d.terminas+' mėn.' : '___'}.<br>
         ${chk(d.parts_enabled)} Pirkimo objektas skaidomas į dalis:${partsHtml}<br>
         ${chk(!d.parts_enabled)} Pirkimo objektas neskaidomas į dalis.<br>
         Pirkimo objektas nėra įtrauktas į CPO katalogą.
@@ -815,11 +815,13 @@ function addNewPart() {
   const list = document.getElementById('new-parts-list');
   const n = list.children.length + 1;
   const d = document.createElement('div');
-  d.className = 'form-grid thirds';
-  d.style.cssText = 'margin-bottom:8px;align-items:flex-end;gap:8px';
-  d.innerHTML = `<div class="fg"><label>${n} dalis: pavadinimas</label><input type="text" class="part-name" placeholder="Dalies pavadinimas"></div>
-    <div class="fg"><label>Be PVM (EUR)</label><input type="number" class="part-ex" step="0.01" placeholder="0.00" oninput="autoCalcPartVat(this)"></div>
-    <div class="fg" style="display:flex;gap:6px;align-items:flex-end"><div style="flex:1"><label>Su PVM (EUR)</label><input type="number" class="part-inc" step="0.01" placeholder="0.00" style="width:100%"></div><button class="btn btn-sm btn-danger" style="margin-bottom:1px" onclick="this.closest('[class*=form-grid]').remove();updatePartLabels()">✕</button></div>`;
+  d.className = '';
+  d.style.cssText = 'display:flex;align-items:flex-end;gap:10px;margin-bottom:8px';
+  d.innerHTML = `
+    <div class="fg" style="flex:3;min-width:0"><label>${n} dalis: pavadinimas</label><input type="text" class="part-name" placeholder="Dalies pavadinimas" style="width:100%"></div>
+    <div class="fg" style="flex:2;min-width:0"><label>Be PVM (EUR)</label><input type="number" class="part-ex" step="0.01" placeholder="0.00" style="width:100%" oninput="autoCalcPartVat(this)"></div>
+    <div class="fg" style="flex:2;min-width:0"><label>Su PVM (EUR)</label><input type="number" class="part-inc" step="0.01" placeholder="0.00" style="width:100%"></div>
+    <button class="btn btn-sm btn-danger" style="flex:0 0 auto;margin-bottom:1px" onclick="this.parentElement.remove();updatePartLabels()">✕</button>`;
   list.appendChild(d);
 }
 function addMember() {
@@ -1407,7 +1409,7 @@ async function generateCurrentProtocol() {
 async function buildDocx(pk, proto, posDate, posNr, vienbalsiai) {
   const {Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
     Header, Footer, AlignmentType, BorderStyle, WidthType, ShadingType,
-    VerticalAlign, PageNumber} = docx;
+    VerticalAlign, PageNumber, ImageRun} = docx;
 
   const PW=11906, MARGIN=1134, CW=PW-MARGIN*2;
   const FONT='Times New Roman', SZ=20;
@@ -1442,7 +1444,7 @@ async function buildDocx(pk, proto, posDate, posNr, vienbalsiai) {
       pr([b(`Pirkimo pavadinimas: ${d.name} (toliau \u2013 Pirkimas).`)]),
       pr([b(`Pirkimo kortel\u0117s registravimo data ir numeris: ${d.korteles_data}, Nr. ${d.id}.`)]),
       pr([b('Numatoma Pirkimo vert\u0117: '),n(`${formatMoney(d.val_ex)} Eur be PVM; ${formatMoney(d.val_inc)} Eur su PVM.`)]),
-      pr([b(`${chk(d.obj_type==='prekes')} Preki\u0173 tiekimo / ${chk(d.obj_type==='paslaugos')} paslaug\u0173 teikimo / ${chk(d.obj_type==='darbai')} darb\u0173 atlikimo terminas: ${d.terminas||'___'}.`)]),
+      pr([b(`${chk(d.obj_type==='prekes')} Preki\u0173 tiekimo / ${chk(d.obj_type==='paslaugos')} paslaug\u0173 teikimo / ${chk(d.obj_type==='darbai')} darb\u0173 atlikimo terminas: ${d.terminas ? d.terminas+' m\u0117n.' : '___'}.`)]),
       ep(),
       pr([b(`${chk(d.parts_enabled)} Pirkimo objektas skaidomas \u012f dalis:`)]),
       ...(d.parts_enabled&&d.parts?d.parts.map((p,i)=>pr([b(`${i+1} dalis: ${p.name} \u2013 ${formatMoney(p.ex)} EUR be PVM; ${formatMoney(p.inc)} EUR su PVM.`)])):[] ),
