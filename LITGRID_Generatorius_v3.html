@@ -1278,8 +1278,14 @@ function toggleNewParts() {
   if (document.getElementById('new-parts-list').children.length === 0) addNewPart();
 }
 function autoCalcPartVat(input) {
-  const row = input.closest('.form-grid');
+  // BUG FIX: ankstesnė versija naudojo input.closest('.form-grid'), kuris randa
+  // bendrą tėvinį konteinerį (visą dalių sekciją), ne konkrečios dalies eilutę.
+  // Dėl to visi auto-PVM skaičiavimai bandydavo rašyti į pirmos dalies inc lauką.
+  // Dabar naudojame .part-row klasę, kuri pridėta tik prie konkrečios eilutės.
+  const row = input.closest('.part-row');
+  if (!row) return;
   const inc = row.querySelector('.part-inc');
+  if (!inc) return;
   const v = parseFloat(input.value);
   if (v && v > 0) inc.value = (v * 1.21).toFixed(2);
   else if (!v) inc.value = '';
@@ -1294,7 +1300,7 @@ function addNewPart() {
   const list = document.getElementById('new-parts-list');
   const n = list.children.length + 1;
   const d = document.createElement('div');
-  d.className = '';
+  d.className = 'part-row';
   d.style.cssText = 'display:flex;align-items:flex-end;gap:10px;margin-bottom:8px';
   d.innerHTML = `
     <div class="fg" style="flex:3;min-width:0"><label>${n} dalis: pavadinimas</label><input type="text" class="part-name" placeholder="Dalies pavadinimas" style="width:100%"></div>
