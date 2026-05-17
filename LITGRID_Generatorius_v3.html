@@ -1506,9 +1506,8 @@ function buildForm_Proto1(pk) {
       <div class="form-grid full">
         <div class="fg"><label>Termino tipas</label>
           <select id="pf-term-type">
-            <option value="dienų" selected>Dienų</option>
-            <option value="darbo dienų">Darbo dienų</option>
-            <option value="kalendorinių dienų">Kalendorinių dienų</option>
+            <option value="darbo dienų">darbo dienomis</option>
+            <option value="kalendorinių dienų" selected>kalendorinėmis dienomis</option>
           </select>
         </div>
       </div>
@@ -1907,7 +1906,7 @@ function buildForm_ProtoD7(pk){
   return `<div class="card"><div class="card-header" onclick="toggleCard(this)">Kvietimas teikti galutinius pasiūlymus <span class="arrow">▼</span></div>
   <div class="card-body">
     <div class="form-grid"><div class="fg"><label>Galutinių pasiūlymų terminas (dienomis)</label><input type="number" id="pf-gp-days" value="10"></div>
-    <div class="fg"><label>Termino tipas</label><select id="pf-gp-term-type"><option value="darbo dienų" selected>Darbo dienų</option><option value="dienų">Dienų</option></select></div></div>
+    <div class="fg"><label>Termino tipas</label><select id="pf-gp-term-type"><option value="darbo dienų" selected>darbo dienomis</option><option value="kalendorinių dienų">kalendorinėmis dienomis</option></select></div></div>
     <div id="pf-gp-inv-list">${buildGpInvRow(1)}${buildGpInvRow(2)}</div>
     <button class="btn-add" onclick="addGpInvRow()">+ Pridėti tiekėją</button>
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
@@ -2124,7 +2123,7 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
 
   if (id==='A1'||id==='D1'||id==='N1') {
     const termDays=document.getElementById('pf-term-days')?.value||35;
-    const termType=document.getElementById('pf-term-type')?.value||'dienų';
+    const termType=document.getElementById('pf-term-type')?.value||'kalendorinių dienų';
     const esChecked=document.getElementById('pf-es')?.checked;
     const cvpChecked=document.getElementById('pf-cvp-s')?.checked;
     const esDate=document.getElementById('pf-es-date')?.value||'';
