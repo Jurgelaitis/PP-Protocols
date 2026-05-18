@@ -16,7 +16,7 @@ Apjungti moduliai:
   - Audito sekos žurnalas (PSĮ 103 str.)
   - Rizikų vėliavos sistema (VPT gairės)
   - AI motyvavimo asistentas (clipboard-based)
-  - PP-Graphs / PP-Durations / VPT Ekspertas sąsajos
+  - VPT Ekspertas sąsaja
 
 Stilius: EPSO-G Brandbook 2026 (Nunito Sans + Smaragdas)
 Saugykla: localStorage (raktas - litgrid_procurements_v2)
@@ -482,7 +482,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
   <div id="new-step3" style="display:none">
     <div class="card">
       <div class="card-body">
-        <div class="section-title">Pirkimų komisija <span class="tooltip-helper" title="PSĮ 31 str.: Min. 3 nariai (pirmininkas + 2). VPT komisijos veiklos gairės.">ⓘ</span></div>
+        <div class="section-title">Pirkimų komisija <span class="tooltip-helper" title="Litgrid AB Komisijos reglamentas §10: Min. 4 nariai. Privalo dalyvauti pirkimų specialistas (pirmininkas), teisininkas, iniciatorius, sekretorius.">ⓘ</span></div>
         <div class="form-grid">
           <div class="fg">
             <label>Komisijos tipas</label>
@@ -574,11 +574,8 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
     <button class="btn btn-secondary btn-sm" onclick="showPage('page-dashboard')">← Visi pirkimai</button>
     <div id="detail-header" style="flex:1"></div>
     <button class="btn btn-secondary btn-sm" onclick="editProcurement()">✏ Redaguoti duomenis</button>
-    <button class="btn btn-primary btn-sm" onclick="openPranesimaiPage()" title="VPK sprendimų pranešimai tiekėjams">📧 Pranešimai tiekėjams</button>
-    <button class="btn btn-secondary btn-sm" onclick="openProcurementAudit()" title="Šio pirkimo audito žurnalas">📜 Audito žurnalas</button>
+    <button class="btn btn-secondary btn-sm" onclick="openProcurementAudit()" title="Šio pirkimo audito žurnalas">📜 Auditas</button>
     <button class="btn btn-secondary btn-sm" onclick="openRiskPanel()" title="Pirkimo rizikų panelis">⚠️ Rizikos</button>
-    <button class="btn btn-secondary btn-sm" onclick="openPpGraphs()" title="Atverti PP-Graphs">📅 PP-Graphs</button>
-    <button class="btn btn-secondary btn-sm" onclick="openPpDurations()" title="Atverti PP-Durations">⏱️ PP-Durations</button>
     <button class="btn btn-danger btn-sm" onclick="deleteProcurement()">🗑 Ištrinti</button>
   </div>
   <div class="proto-list" id="proto-sequence"></div>
@@ -785,8 +782,6 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 
       <h3 style="margin-bottom:8px;color:var(--epso-emerald)">Sąsajos</h3>
       <ul style="margin-left:24px;margin-bottom:16px">
-        <li><strong>PP-Durations</strong> — terminų skaičiavimo modulis (A/B schedule)</li>
-        <li><strong>PP-Graphs</strong> — pirkimų grafikų modulis</li>
         <li><strong>VPT Ekspertas</strong> — AI pagrįstas VP konsultantas</li>
       </ul>
 
@@ -1199,19 +1194,30 @@ function renderDetail(id) {
   const pk = getProcurement(id);
   if (!pk) return;
   const seq = getSequence(pk.type);
-  // P2: Rizikos lygio skaičiavimas
+  // Tvarkingas pirkimo informacijos pateikimas
   let _riskLvl = {level:'low', label:'Žema'};
   try { _riskLvl = calcRiskLevel(pk); } catch(e){}
-  const _komTip = pk.komisija?.tipas==='ad_hoc' ? '<span class="epso-badge epso-badge--draft">Ad hoc komisija</span>' : '<span class="epso-badge epso-badge--ready">Nuolatinė komisija</span>';
-  const _nesalisk = pk.komisija?.nesaliskumas ? '<span class="epso-badge epso-badge--ready" title="Nešališkumo deklaracijos pasirašytos">✓ Nešališkumas</span>' : '<span class="epso-badge epso-badge--high" title="PSĮ 23 str. — deklaracijų pasirašymas nepažymėtas">⚠ Nepatvirtinta nešališkumo</span>';
+  const _riskColor = _riskLvl.level==='high'?'var(--epso-error)':(_riskLvl.level==='medium'?'var(--epso-warning)':'var(--epso-emerald)');
+  const _komTip = pk.komisija?.tipas==='ad_hoc' ? 'Ad hoc komisija' : 'Nuolatinė komisija';
+  const _archiveYr = (pk.korteles_data ? new Date(pk.korteles_data).getFullYear() : new Date().getFullYear()) + 4;
   document.getElementById('detail-header').innerHTML = `
-    <h2 style="font-size:17px;font-weight:700">${pk.id} — ${pk.name}</h2>
-    <p style="font-size:12px;color:#6b7a99;margin-top:2px">${typeLabel(pk.type)} &nbsp;·&nbsp; Vertė: ${formatMoney(pk.val_ex)} EUR be PVM</p>
-    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-      <span class="risk-level-badge risk-level-badge--${_riskLvl.level}" onclick="openRiskPanel()" style="cursor:pointer" title="Spauskite peržiūrai">⚠ Rizika: ${_riskLvl.label}</span>
-      ${_komTip}
-      ${_nesalisk}
-      <span style="font-size:11px;color:var(--epso-graphite-50)">📦 Saugojimas iki ${new Date().getFullYear()+4} m. (PSĮ 103 str.)</span>
+    <div style="background:linear-gradient(135deg, #fff 0%, var(--epso-green-5) 100%);border:1px solid var(--epso-graphite-15);border-radius:12px;padding:18px 22px;box-shadow:0 1px 3px rgba(46,54,65,.04)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap">
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:11px;font-weight:700;color:var(--epso-emerald);letter-spacing:.4px;text-transform:uppercase">${pk.id}</div>
+          <h2 style="font-size:20px;font-weight:700;margin-top:2px;color:var(--epso-graphite);line-height:1.3">${pk.name}</h2>
+          <div style="margin-top:8px;font-size:13px;color:var(--epso-graphite-50);display:flex;gap:18px;flex-wrap:wrap">
+            <span><strong style="color:var(--epso-graphite)">${typeLabel(pk.type)}</strong></span>
+            <span>💶 ${formatMoney(pk.val_ex)} EUR be PVM</span>
+            <span>📅 ${pk.korteles_data || '___'}</span>
+            <span>👥 ${_komTip}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div onclick="openRiskPanel()" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:${_riskColor};color:#fff;font-size:12px;font-weight:700" title="Peržiūrėti rizikas">⚠ Rizika: ${_riskLvl.label}</div>
+          <div style="font-size:11px;color:var(--epso-graphite-50)" title="PSĮ 103 str.">📦 Saugoma iki ${_archiveYr} m.</div>
+        </div>
+      </div>
     </div>
   `;
   const done = Object.values(pk.protocols || {}).filter(p => p.done).length;
@@ -1245,7 +1251,7 @@ function togglePfVote(cb){
       const nariai = [pk.komisija.chair, pk.komisija.secretary, ...(pk.komisija.members||[])].filter(n=>n);
       const tbody = document.getElementById('pf-vote-tbody');
       if(tbody){
-        tbody.innerHTML = nariai.map((n,i)=>`<tr><td>${n}</td><td><input type="radio" name="pf-vote-${i}" value="uz" checked></td><td><input type="radio" name="pf-vote-${i}" value="pries"></td><td><input type="radio" name="pf-vote-${i}" value="susilaike"></td></tr>`).join('');
+        tbody.innerHTML = nariai.map((n,i)=>`<tr><td>${n}</td><td><input type="radio" name="pf-vote-${i}" value="uz" checked></td><td><input type="radio" name="pf-vote-${i}" value="pries"></td></tr>`).join('');
       }
     }
   } else {
@@ -1380,8 +1386,8 @@ function saveProcurement() {
   const _sec = document.getElementById('new-kom-sec').value.trim();
   const _mems = [...document.querySelectorAll('#new-kom-members .narys')].map(i=>i.value).filter(v=>v);
   const _total = (_chair?1:0) + (_sec?1:0) + _mems.length;
-  if (_total < 3) {
-    if (!confirm(`⚠️ ĮSPĖJIMAS pagal PSĮ 31 str. ir VPT „Komisijos veiklos gaires":\n\nKomisija turi mažiau nei 3 narius (šiuo metu: ${_total}).\n\nMin. reikalaujama: pirmininkas + 2 nariai.\n\nAr tikrai norite tęsti?`)) return;
+  if (_total < 4) {
+    if (!confirm(`⚠️ ĮSPĖJIMAS pagal Komisijos darbo reglamento §10:\n\nKomisija turi mažiau nei 4 narius (šiuo metu: ${_total}).\n\nMin. reikalaujama:\n- pirmininkas (Pirkimų skyriaus darbuotojas su specialisto pažymėjimu)\n- teisininkas\n- pirkimo iniciatorius (arba jo vadovas)\n- posėdžio sekretorius\n\nAr tikrai norite tęsti?`)) return;
   }
   // P1 įspėjimas: nešališkumo deklaracijos
   if (!document.getElementById('new-kom-nesalisk')?.checked) {
@@ -1487,6 +1493,9 @@ function buildProtoForm(pk, proto) {
   else if (id === 'D9' || id === 'A5' || id === 'N7') html += buildForm_ProtoA5(pk);
   else html += `<div class="card"><div class="card-body"><div class="warn-box">Šio protokolo forma dar kuriama.</div></div></div>`;
 
+  // FAZĖ 1C: Sugeneruotų dokumentų skiltis (protokolas + pranešimai)
+  html += renderProtocolDocuments(pk.id, proto.id);
+
   return html;
 }
 
@@ -1550,7 +1559,8 @@ function buildForm_Proto1(pk) {
       <div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1586,7 +1596,8 @@ function buildForm_Proto2(pk) {
       <div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1647,7 +1658,8 @@ function buildForm_ProtoA3(pk) {
       <div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1708,7 +1720,8 @@ function buildForm_ProtoA4(pk) {
       <div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1766,7 +1779,8 @@ function buildForm_ProtoA5(pk) {
       <div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1794,7 +1808,8 @@ function buildForm_ProtoD3(pk) {
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1813,7 +1828,8 @@ function buildForm_ProtoD3_1(pk) {
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1831,7 +1847,8 @@ function buildForm_ProtoD4(pk) {
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1849,7 +1866,8 @@ function buildForm_ProtoD5(pk) {
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1867,7 +1885,8 @@ function buildForm_ProtoD6(pk){
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1886,7 +1905,8 @@ function buildForm_ProtoD6_1(pk){
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1912,7 +1932,8 @@ function buildForm_ProtoD7(pk){
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1931,7 +1952,8 @@ function buildForm_ProtoD7_2(pk){
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -1951,7 +1973,8 @@ function buildForm_ProtoD8(pk){
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
         <div style="font-weight:600;margin-bottom:8px;font-size:13px">📊 Balsavimo lentelė (VPT „Komisijos veiklos gairės")</div>
-        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th><th>Susilaikė</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <table class="vote-table"><thead><tr><th>Komisijos narys</th><th>Už</th><th>Prieš</th></tr></thead><tbody id="pf-vote-tbody"></tbody></table>
+        <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:6px"><strong>Reglamento §28:</strong> Komisija priima sprendimus paprasta balsų dauguma <strong>atviru vardiniu balsavimu</strong>. Balsuoti galima tik <strong>už arba prieš</strong> siūlomą sprendimą (susilaikyti nėra galimybės).</div>
         <div style="font-weight:600;margin:12px 0 6px;font-size:13px">📝 Atskirosios nuomonės (jei buvo pareikšta)</div>
         <textarea id="pf-atskira" rows="3" placeholder="Pvz., Komisijos narys X. Y. balsavo prieš dėl: (motyvas)..." style="width:100%;padding:8px;border:1px solid var(--epso-graphite-15);border-radius:6px;font-family:Nunito Sans"></textarea>
         <div style="font-size:11px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: nariai, balsuojantys prieš daugumą, turėtų visuomet pareikšti atskirąją nuomonę.</div>
@@ -2249,11 +2272,204 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
     rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas. Ekspert\u0173 i\u0161vados.')]),pr([n('\u2611 2 priedas. Kvietimas sudaryti sutart\u012f.')])],{w:CW})]}));
   }
 
+  else if (id==='D3' || id==='D3_1') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    const d3rows = [...document.querySelectorAll('#pf-d3-tbody tr, #pf-d3-1-tbody tr')];
+    const d3List = d3rows.map((tr,i) => {
+      const name = tr.querySelector('.d3-name, .d3-1-name')?.value || '___';
+      return `${i+1}. Tiekejas: ${name}`;
+    });
+    rows.push(new TableRow({children:[cl([
+      pr([n('Susipazinta su pateiktomis paraiskomis. Uzfiksuota:')]),
+      ...(d3List.length>0 ? d3List.map(t => pr([n(t)])) : [pr([n('(paraiskos nepateiktos)')])])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('1. Pripazinti, kad paraiskas pateike sie tiekejai (zr. SVARSTYTA dali).')]),
+      pr([n('2. Perduoti paraiskas vertinimui pagal Pirkimo dokumentuose nustatytus reikalavimus.')])
+    ],{w:CW})]}));
+    rows.push(hdr1('3. PRIEDAS (-AI)'));
+    rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas. Paraiskos.')])],{w:CW})]}));
+  }
+  else if (id==='D4') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    const d4rows = [...document.querySelectorAll('#pf-d4-tbody tr')];
+    const d4items = d4rows.map((tr,i) => {
+      const name = tr.querySelector('.d4-name')?.value || '___';
+      const atit = tr.querySelector('.d4-atit')?.value || 'taip';
+      const vk = tr.querySelector('.d4-vk')?.value || 'kviesti';
+      const atitText = atit==='taip' ? 'atitinka Pirkimo salygas' : 'neatitinka Pirkimo salygu';
+      const vkText = vk==='kviesti' ? 'kviesti teikti pirmini pasiulyma' : (vk==='atmesti' ? 'atmesti paraiska' : vk);
+      return `${i+1}. ${name} \u2014 ${atitText}, siuloma ${vkText}.`;
+    });
+    rows.push(new TableRow({children:[cl([
+      pr([n('Komisijos nariai ir (ar) ekspertai isnagrinejo pateiktas tiekeju paraiskas:')]),
+      ...(d4items.length>0 ? d4items.map(t => pr([n(t)])) : [pr([n('(paraisku nera)')])])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    const d4decisions = [];
+    d4rows.forEach((tr,i) => {
+      const name = tr.querySelector('.d4-name')?.value || '___';
+      const vk = tr.querySelector('.d4-vk')?.value || 'kviesti';
+      if (vk==='kviesti') d4decisions.push(`${i+1}. Kviesti tiekeja ${name} pateikti pirmini pasiulyma.`);
+      else if (vk==='atmesti') d4decisions.push(`${i+1}. Atmesti tiekejo ${name} paraiska (Bendruju Pirkimo salygu 14.7 p.).`);
+    });
+    if(d4decisions.length===0) d4decisions.push('1. (Sprendimai pildomi pagal vertinimo rezultatus.)');
+    rows.push(new TableRow({children:[cl(d4decisions.map(t => pr([n(t)])),{w:CW})]}));
+    rows.push(hdr1('3. PRIEDAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('\u2611 1 priedas. Ekspertu isvados.')]),
+      pr([n('\u2611 2 priedas. Rasto (-u) tiekejams (-ui) projektas (-ai).')])
+    ],{w:CW})]}));
+  }
+  else if (id==='D5a' || id==='D5a1' || id==='D5a2') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    const d5rows = [...document.querySelectorAll('#pf-d5-tbody tr')];
+    const d5items = d5rows.map((tr,i) => {
+      const name = tr.querySelector('.d5-name')?.value || '___';
+      const ex = tr.querySelector('.d5-ex')?.value || '___';
+      const inc = tr.querySelector('.d5-inc')?.value || '___';
+      return `${i+1}. ${name} \u2014 ${ex} Eur be PVM (${inc} Eur su PVM).`;
+    });
+    rows.push(new TableRow({children:[cl([
+      pr([n('Susipazinta su pateiktais pirminiais pasiulymais. Uzfiksuotos pasiulymu kainos:')]),
+      ...(d5items.length>0 ? d5items.map(t => pr([n(t)])) : [pr([n('(pirminiai pasiulymai nepateikti)')])])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('1. Pripazinti, kad pirminius pasiulymus pateike aukstos islistyti tiekejai.')]),
+      pr([n('2. Perduoti pirminius pasiulymus vertinimui Komisijos nariams ir/ar ekspertams.')])
+    ],{w:CW})]}));
+    rows.push(hdr1('3. PRIEDAS (-AI)'));
+    rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas. Pirminiai pasiulymai.')])],{w:CW})]}));
+  }
+  else if (id==='D6' || id==='N4') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    const d6rows = [...document.querySelectorAll('#pf-d6-tbody tr')];
+    const d6list = d6rows.map((tr,i) => {
+      const name = tr.querySelector('.d6-name')?.value || '___';
+      const atit = tr.querySelector('.d6-atit')?.value || 'taip';
+      const vk = tr.querySelector('.d6-vk')?.value || 'derybos';
+      const atitText = atit==='taip' ? 'atitinka Pirkimo salygas' : 'neatitinka Pirkimo salygu';
+      const vkText = vk==='derybos' ? 'kviesti i derybas' : (vk==='gp' ? 'kviesti teikti galutini pasiulyma' : 'atmesti pasiulyma');
+      return `${i+1}. ${name} \u2014 pirminis pasiulymas ${atitText}; siuloma ${vkText}.`;
+    });
+    rows.push(new TableRow({children:[cl([
+      pr([n('Pirkimo proceduru metu patikrinus Vyriausiosios tarnybines etikos komisijos internetiniame puslapyje viesai skelbiama informacija, nenustatyta viesu ir privaciu interesu kolizijos tarp ekspertu, Komisijos nariu ir Pirkimo dalyviu.')]),
+      ep(),
+      pr([n('Komisijos nariai ir (ar) ekspertai isnagrinejo zemiau lenteleje nurodytu tiekeju pirminius pasiulymus ir pateike isvadas (pridedama sio protokolo 1 priede):')]),
+      ...(d6list.length>0 ? d6list.map(t => pr([n(t)])) : [pr([n('(pirminiu pasiulymu nera)')])])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    const d6decisions = [];
+    d6decisions.push('1. Pripazinti, kad viesu ir privaciu interesu kolizijos pirkimo proceduru metu nenustatyta.');
+    const inviteList = d6rows.filter(tr => tr.querySelector('.d6-vk')?.value==='derybos').map(tr => tr.querySelector('.d6-name')?.value || '___');
+    const gpList = d6rows.filter(tr => tr.querySelector('.d6-vk')?.value==='gp').map(tr => tr.querySelector('.d6-name')?.value || '___');
+    const rejectList = d6rows.filter(tr => tr.querySelector('.d6-vk')?.value==='atmesti').map(tr => tr.querySelector('.d6-name')?.value || '___');
+    if(inviteList.length > 0) d6decisions.push(`2. Vadovaujantis Bendruju Pirkimo salygu 13.2.1 punktu, kviesti i derybas siuos tiekejus: ${inviteList.join('; ')}.`);
+    if(gpList.length > 0) d6decisions.push(`${d6decisions.length+1}. Kviesti siuos tiekejus pateikti galutinius pasiulymus: ${gpList.join('; ')}.`);
+    if(rejectList.length > 0) d6decisions.push(`${d6decisions.length+1}. Vadovaujantis Pirkimu istatymo 58 str. ir Bendruju Pirkimo salygu 14.7 punktu, atmesti siu tiekeju pirminius pasiulymus: ${rejectList.join('; ')}.`);
+    d6decisions.push(`${d6decisions.length+1}. Ne veliau kaip per 1 darbo diena nuo sprendimo priemimo dienos CVP IS priemonemis informuoti tiekejus apie protokole priimtus sprendimus.`);
+    rows.push(new TableRow({children:[cl(d6decisions.map(t => pr([n(t)])),{w:CW})]}));
+    rows.push(hdr1('3. PRIEDAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('\u2611 1 priedas. Ekspertu isvados.')]),
+      pr([n('\u2611 2 priedas. Rasto (-u) tiekejams (-ui) projektas (-ai).')])
+    ],{w:CW})]}));
+  }
+  else if (id==='D6_1' || id==='N5') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    const derDate = document.getElementById('pf-der-date')?.value || '___';
+    const derVieta = document.getElementById('pf-der-vieta')?.value || '___';
+    const derRows = [...document.querySelectorAll('#pf-der-list .klausimas-row')];
+    const derItems = derRows.map((dr,i) => {
+      const name = dr.querySelector('.der-name')?.value || '___';
+      const rez = dr.querySelector('.der-rez')?.value || 'susitarta';
+      const note = dr.querySelector('.der-note')?.value || '';
+      const rezText = rez==='susitarta' ? 'Susitarta del salygu' : 'Nesusitarta';
+      return `${i+1}. Tiekejas: ${name}. ${rezText}.${note ? ' Pastabos: '+note : ''}`;
+    });
+    rows.push(new TableRow({children:[cl([
+      pr([n(`Derybos su tiekejais vykdomos ${derDate} diena, ${derVieta}.`)]),
+      ep(),
+      pr([n('Derybu eiga ir rezultatai pagal tiekejus:')]),
+      ...(derItems.length>0 ? derItems.map(t => pr([n(t)])) : [pr([n('(derybu duomenys nepateikti)')])])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('1. Uzfiksuoti aukstos nurodytus derybu rezultatus.')]),
+      pr([n('2. Kviesti salis pasirasyti derybu protokola.')]),
+      pr([n('3. Kviesti tiekejus pateikti galutinius pasiulymus pagal aptartas salygas.')])
+    ],{w:CW})]}));
+    rows.push(hdr1('3. PARASAI'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('Komisijos pirmininkas (-e) _____________________')]),
+      pr([n('Tiekejo igaliotas atstovas _____________________')]),
+      pr([n('(Reglamento \u00a729 \u2014 derybu protokola pasiraso Komisijos pirmininkas ir tiekejo igaliotas atstovas.)')]),
+    ],{w:CW})]}));
+  }
+  else if (id==='D7') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    const gpDays = document.getElementById('pf-gp-days')?.value || '10';
+    const gpType = document.getElementById('pf-gp-term-type')?.value || 'darbo dienomis';
+    const gpRows = [...document.querySelectorAll('#pf-gp-inv-list .klausimas-row')];
+    const gpItems = gpRows.map((dr,i) => {
+      const name = dr.querySelector('.gp-name')?.value || '___';
+      return `${i+1}. ${name}`;
+    });
+    rows.push(new TableRow({children:[cl([
+      pr([n('Ivykus deryboms su tiekejais, Komisija svarsto kvietima tiekejams pateikti galutinius pasiulymus.')]),
+      ep(),
+      pr([n('Tiekejai, kuriems siunciamas kvietimas:')]),
+      ...(gpItems.length>0 ? gpItems.map(t => pr([n(t)])) : [pr([n('(tiekejai nenurodyti)')])])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n(`1. Kviesti aukstos nurodytus tiekejus pateikti galutinius pasiulymus per ${gpDays} ${gpType} nuo kvietimo issiuntimo dienos.`)]),
+      pr([n('2. Ne veliau kaip per 1 darbo diena CVP IS priemonemis issiusti kvietima tiekejams.')])
+    ],{w:CW})]}));
+    rows.push(hdr1('3. PRIEDAS (-AI)'));
+    rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas. Kvietimo tiekejams projektas.')])],{w:CW})]}));
+  }
+  else if (id==='D7_2') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('Susipazinta su pateiktais galutiniais pasiulymais. Uzfiksuotos kainos ir technines charakteristikos pagal pateiktus duomenis.')])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('1. Pripazinti, kad galutinius pasiulymus pateike aukstos islistyti tiekejai.')]),
+      pr([n('2. Perduoti galutinius pasiulymus vertinimui Komisijos nariams ir/ar ekspertams.')])
+    ],{w:CW})]}));
+    rows.push(hdr1('3. PRIEDAS (-AI)'));
+    rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas. Galutiniai pasiulymai.')])],{w:CW})]}));
+  }
+  else if (id==='D8' || id==='N6') {
+    rows.push(hdr1('1. SVARSTYTA'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('Pirkimo proceduru metu nenustatyta viesu ir privaciu interesu kolizijos tarp ekspertu, Komisijos nariu ir Pirkimo dalyviu.')]),
+      ep(),
+      pr([n('Komisija ivertino pateiktus galutinius pasiulymus, ju atitikti Pirkimo dokumentuose nustatytiems reikalavimams ir kainos / kainos ir kokybes santyki.')]),
+      pr([n('(Vertinimo rezultatai pildomi pagal kiekvieno pasiulymo individualu vertinima.)')])
+    ],{w:CW})]}));
+    rows.push(hdr1('2. SPRENDIMAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('1. Sudaryti pasiulymu eile ekonomiskai naudingiausio pasiulymo mazejimo tvarka.')]),
+      pr([n('2. Pripazinti laimejusiu (pildoma).')]),
+      pr([n('3. Vadovaujantis Pirkimu istatymo 68 str. nustatyta tvarka pranesti tiekejams apie priimta sprendima.')]),
+      pr([n('4. Pakviesti laimejusi tiekeja sudaryti sutarti po atidejimo termino.')])
+    ],{w:CW})]}));
+    rows.push(hdr1('3. PRIEDAS (-AI)'));
+    rows.push(new TableRow({children:[cl([
+      pr([n('\u2611 1 priedas. Ekspertu isvados.')]),
+      pr([n('\u2611 2 priedas. Pasiulymu eile.')])
+    ],{w:CW})]}));
+  }
   else {
     rows.push(hdr1('1. SVARSTYTA'));
-    rows.push(new TableRow({children:[cl([pr([n('(Protokolo turinys u\u017epildomas pagal poreik\u012f)')])],{w:CW})]}));
+    rows.push(new TableRow({children:[cl([pr([n('(Protokolo turinys uzpildomas pagal poreiki)')])],{w:CW})]}));
     rows.push(hdr1('2. SPRENDIMAS (-AI)'));
-    rows.push(new TableRow({children:[cl([pr([n('(Sprendimai u\u017epildomi pagal poreik\u012f)')])],{w:CW})]}));
+    rows.push(new TableRow({children:[cl([pr([n('(Sprendimai uzpildomi pagal poreiki)')])],{w:CW})]}));
     rows.push(hdr1('3. PRIEDAS (-AI)'));
     rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas.')])],{w:CW})]}));
   }
@@ -2263,7 +2479,7 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
 
 // ════════════════════════════════════════════════════════
 // V3 EXTENSIONS — Pranešimai, Audito žurnalas, Rizikos,
-// AI asistentas, VPT/PP-Graphs sąsajos
+// AI asistentas, VPT Ekspertas sąsajos
 // Šablonų versija: v1.0 (2026-05-17, paskutinė teisininkų peržiūra)
 // ════════════════════════════════════════════════════════
 
@@ -2488,6 +2704,112 @@ const PN_TEMPLATES = {
 };
 
 // ─────────────────────────────────────────────────────────
+// PROTOKOLO TIPO → SUSIJĘ PRANEŠIMŲ ŠABLONAI
+// (Notes 2: pranešimai integruoti POD kiekvienu protokolu)
+// ─────────────────────────────────────────────────────────
+const PROTOCOL_NOTIFICATIONS = {
+  'A1': [], 'D1': [], 'N1': [],  // Pirkimo organizavimo — pranešimų nėra
+  'A2': ['0_atsakymai'], 'D2': ['0_atsakymai'], 'N2': ['0_atsakymai'],  // Atsakymai į klausimus
+  'A3': [], 'A3b': [],  // Susipažinimas su pasiūlymais — pranešimų nėra
+  'A4': ['3_aritm_klaidos','4_per_didele_kaina','5_pasiulymas_ok','8_galimas_laimetojas','8_1_kitiems_galimas','12_atmetimas','12_1_visi_atmesti','12_2_kitiems_pabaiga','16_galiojimas'],
+  'A5': ['9_laimetojui_kaina','9_1_laimetojui_ekonom','10_kitiems_eile','11_kitiems_ekonom','13_kvietimas_sutarti','15_nmk','12_atmetimas','14_pretenzija_sustabdymas','14_1_pretenzija_atm_pabaiga','14_2_pretenzija_atm_tesimas','14_3_pretenzija_tenkinta'],
+  'D3': [], 'D3_1': [],  // Susipažinimas su paraiškomis
+  'D4': ['1_kvietimas_pasiulymui','3_aritm_klaidos','12_atmetimas','12_2_kitiems_pabaiga'],
+  'D5a': [], 'D5a1': [], 'D5a2': [],
+  'D6': ['3_aritm_klaidos','6_kvietimas_derybu','12_atmetimas','12_2_kitiems_pabaiga'],
+  'D6_1': [],  // Derybų protokolas
+  'D7': ['7_1_kvietimas_gp'],
+  'D7_2': [],
+  'D8': ['9_laimetojui_kaina','10_kitiems_eile','8_galimas_laimetojas','12_atmetimas','12_2_kitiems_pabaiga','15_nmk'],
+  'D9': ['9_laimetojui_kaina','9_1_laimetojui_ekonom','10_kitiems_eile','13_kvietimas_sutarti','15_nmk','14_pretenzija_sustabdymas'],
+  'N5a': [], 'N6': ['6_kvietimas_derybu','12_atmetimas'], 'N6_1': [],
+  'N8': ['9_laimetojui_kaina','10_kitiems_eile','12_atmetimas'],
+  'N9': ['9_laimetojui_kaina','13_kvietimas_sutarti','15_nmk']
+};
+
+function getProtocolNotifications(protoId){
+  // Normalizuojam ID (D6_1 → D6_1, D5a1 → D5a1)
+  return PROTOCOL_NOTIFICATIONS[protoId] || [];
+}
+
+function getNotifsForProtocol(pkId, protoId){
+  // Visi sukurti pranešimai, susieti su konkrečiu protokolu
+  const store = loadNotifStore();
+  return (store[pkId]||[]).filter(n => n.sourceProtocolId === protoId);
+}
+
+function renderProtocolDocuments(pkId, protoId){
+  // Grąžina HTML su sugeneruotų dokumentų sąrašu + galimais pranešimais šiam protokolui
+  const pk = getProcurement(pkId);
+  if(!pk) return '';
+  const proto = (pk.protocols||{})[protoId] || {};
+  const seq = getSequence(pk.type);
+  const protoInfo = seq.find(p=>p.id===protoId) || {num:'?', name:protoId};
+  const isDone = !!proto.done;
+  const availableNotifs = getProtocolNotifications(protoId);
+  const createdNotifs = getNotifsForProtocol(pkId, protoId);
+
+  let html = `<div class="card" style="margin-top:16px"><div class="card-header" style="cursor:default"><span>📂 Sugeneruoti dokumentai (Protokolas ${protoInfo.num})</span></div><div class="card-body">`;
+
+  // 1. Pats protokolas
+  html += `<div class="notification-item" style="margin-bottom:8px"><div><div class="notification-item__title">📄 ${protoInfo.name}</div><div class="notification-item__meta">${isDone ? '✓ Sugeneruota: '+(proto.date||'') : 'Dar nesugeneruotas'}</div></div>`;
+  if(isDone){
+    html += `<span class="epso-badge epso-badge--ready">Paruošta</span>`;
+  } else {
+    html += `<span class="epso-badge epso-badge--draft">Juodraštis</span>`;
+  }
+  html += `<button class="btn btn-primary btn-sm" onclick="generateCurrentProtocol()">⬇ Generuoti DOCX</button></div>`;
+
+  // 2. Pranešimų sąrašas
+  if(availableNotifs.length === 0){
+    html += `<div style="padding:12px;background:var(--epso-graphite-5);border-radius:6px;color:var(--epso-graphite-50);font-size:13px;text-align:center">ℹ️ Šiam protokolui pranešimai tiekėjams negeneruojami</div>`;
+  } else {
+    html += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--epso-graphite-15)"><div style="font-weight:700;font-size:13px;margin-bottom:8px;color:var(--epso-emerald)">📧 PRANEŠIMAI TIEKĖJAMS (${availableNotifs.length} galimi šablonai)</div>`;
+    availableNotifs.forEach(tId => {
+      const tpl = PN_TEMPLATES[tId];
+      if(!tpl) return;
+      const created = createdNotifs.filter(n => n.templateId === tId);
+      html += `<div class="notification-item" style="margin-bottom:6px"><div><div class="notification-item__title" style="font-size:13px">${tpl.title}</div><div class="notification-item__meta">${created.length>0 ? '✓ Sukurta '+created.length+' (kiekvienam tiekėjui atskirai)' : 'Šablonas Nr. '+tId.split('_')[0]}</div></div>`;
+      html += `<span class="epso-badge ${created.length>0?'epso-badge--ready':'epso-badge--draft'}">${created.length>0?'Yra':'Nėra'}</span>`;
+      html += `<button class="btn btn-primary btn-sm" onclick="openInlinePnGenerator('${tId}','${protoId}')">${created.length>0?'➕':'⚙️'} Generuoti</button>`;
+      if(created.length>0){
+        html += `<button class="btn btn-secondary btn-sm" onclick="viewProtocolNotifs('${protoId}','${tId}')">👁️ Peržiūra</button>`;
+      }
+      html += `</div>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `</div></div>`;
+  return html;
+}
+
+function openInlinePnGenerator(templateId, protoId){
+  // Persikrauname į pranešimų puslapį su iš anksto pasirinktu šablonu ir kontekstu
+  currentPnPkId = currentPkId;
+  currentPnSourceProtocolId = protoId;
+  sessionStorage.setItem('pn_source_proto', protoId);
+  const pk = getProcurement(currentPkId);
+  document.getElementById('pranesimai-pk-name').textContent = (pk?.name||'') + ' › Protokolas ' + protoId;
+  showPage('page-pranesimai');
+  switchPnTab('new');
+  setTimeout(()=>{
+    const sel = document.getElementById('pn-template-id');
+    if(sel){ sel.value = templateId; onPnTemplateChange(); }
+    initPnTiekejai();
+  }, 100);
+}
+
+function viewProtocolNotifs(protoId, templateId){
+  currentPnPkId = currentPkId;
+  showPage('page-pranesimai');
+  switchPnTab('list');
+}
+
+let currentPnSourceProtocolId = null;
+
+
+// ─────────────────────────────────────────────────────────
 // 2. TERMINŲ SKAIČIAVIMAS — LT DARBO DIENOS + ŠVENTĖS
 // ─────────────────────────────────────────────────────────
 const LT_HOLIDAYS_FIXED = ['01-01','02-16','03-11','05-01','06-24','07-06','08-15','11-01','11-02','12-24','12-25','12-26'];
@@ -2647,9 +2969,9 @@ function analyzeRisks(pk, tiekejai, templateId, data){
 
   if(pk&&pk.komisija){
     const total = 1 + 1 + (pk.komisija.members?pk.komisija.members.length:0);
-    if(total<3){
-      risks.push({level:'high', icon:'🔴', title:'Komisija turi mažiau nei 3 narius',
-        detail:'PSĮ 31 str. reikalauja min. 3 narių (pirmininkas + 2 nariai).'});
+    if(total<4){
+      risks.push({level:'high', icon:'🔴', title:'Komisija turi mažiau nei 4 narius',
+        detail:'Litgrid AB Komisijos darbo reglamento §10 reikalauja min. 4 narių: pirmininkas (specialistas) + teisininkas + iniciatorius + sekretorius.'});
     }
   }
 
@@ -3219,27 +3541,6 @@ function openRiskPanel(){
   logAudit('VIEW_RISK_PANEL', currentPkId);
 }
 function closeRiskPanel(){ document.getElementById('risk-modal').classList.remove('show'); }
-
-// ─────────────────────────────────────────────────────────
-// 8. PP-Graphs / PP-Durations sąsajos
-// ─────────────────────────────────────────────────────────
-function openPpGraphs(){
-  // PP-Graphs — pirkimų grafikų modulis
-  if(currentPkId){
-    sessionStorage.setItem('pp_graphs_context', JSON.stringify({pkId: currentPkId, source:'sprendimu_centras_v3'}));
-  }
-  window.open('PP-Graphs.html','_blank');
-  logAudit('OPEN_PP_GRAPHS', currentPkId);
-}
-
-function openPpDurations(){
-  // PP-Durations — terminų skaičiavimas
-  if(currentPkId){
-    sessionStorage.setItem('pp_durations_context', JSON.stringify({pkId: currentPkId, source:'sprendimu_centras_v3'}));
-  }
-  window.open('PP-Durations.html','_blank');
-  logAudit('OPEN_PP_DURATIONS', currentPkId);
-}
 
 // ─────────────────────────────────────────────────────────
 // 9. ESC klavišas modalams
