@@ -570,14 +570,15 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 
 <!-- ══════════════════════════ PAGE: PROCUREMENT DETAIL ══════════════════════════ -->
 <div class="page" id="page-detail">
-  <div style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
     <button class="btn btn-secondary btn-sm" onclick="showPage('page-dashboard')">← Visi pirkimai</button>
-    <div id="detail-header" style="flex:1"></div>
-    <button class="btn btn-secondary btn-sm" onclick="editProcurement()">✏ Redaguoti duomenis</button>
+    <div style="flex:1"></div>
+    <button class="btn btn-secondary btn-sm" onclick="editProcurement()">✏ Redaguoti</button>
     <button class="btn btn-secondary btn-sm" onclick="openProcurementAudit()" title="Šio pirkimo audito žurnalas">📜 Auditas</button>
     <button class="btn btn-secondary btn-sm" onclick="openRiskPanel()" title="Pirkimo rizikų panelis">⚠️ Rizikos</button>
     <button class="btn btn-danger btn-sm" onclick="deleteProcurement()">🗑 Ištrinti</button>
   </div>
+  <div id="detail-header" style="margin-bottom:18px"></div>
   <div class="proto-list" id="proto-sequence"></div>
 </div>
 
@@ -2955,6 +2956,59 @@ const PN_TEMPLATES = {
         en:`${d.imone} procurement commission has examined the claim and decided to (partially) accept it. Actions: ${d.veiksmai}.`
       };
     }
+  },
+  '0_atsakymai': {
+    title:'DĖL PIRKIMO SĄLYGŲ PAAIŠKINIMO / PATIKSLINIMO',
+    titleEn:'REGARDING CLARIFICATION OF THE PROCUREMENT TERMS',
+    addressee:'group', psi:[], bpsAk:{}, bpsSd:{},
+    fields:['klausimai_atsakymai','naujas_terminas','priezastis'],
+    body(d){
+      const ext = d.naujas_terminas ? `\nAtsižvelgiant į pateiktus paaiškinimus / patikslinimus${d.priezastis?' ir gautą prašymą'+(d.priezastis?' ('+d.priezastis+')':''):''}, pasiūlymų pateikimo terminas pratęsiamas iki ${d.naujas_terminas}.` : '';
+      const extEn = d.naujas_terminas ? `\nIn view of the clarifications provided, the deadline for submission of bids is extended to ${d.naujas_terminas}.` : '';
+      return {
+        lt:`${d.imone} pirkimų komisija (toliau – Komisija) ${d.pirkimo_budas} vykdo ${d.pirkimas} pirkimą (toliau – Pirkimas).\nKomisija gavo tiekėjų klausimus / prašymus dėl Pirkimo dokumentų ir teikia šiuos atsakymus / patikslinimus:\n${d.klausimai_atsakymai||'(turinys pildomas)'}${ext}\nPrašome atsižvelgti į šiuos paaiškinimus / patikslinimus rengiant pasiūlymą.`,
+        en:`${d.imone} procurement commission (the Commission) is conducting the procurement of ${d.pirkimas} (the Procurement) ${d.pirkimo_budas_en}.\nThe Commission has received questions / requests from suppliers and provides the following responses / clarifications:\n${d.klausimai_atsakymai||'(content to be filled)'}${extEn}\nPlease take these clarifications into account when preparing the bid.`
+      };
+    }
+  },
+  '1_kvietimas_pasiulymui': {
+    title:'DĖL KVIETIMO TEIKTI PIRMINĮ PASIŪLYMĄ',
+    titleEn:'REGARDING INVITATION TO SUBMIT INITIAL BID',
+    addressee:'individual', psi:[], bpsAk:{}, bpsSd:{kvietimas:'10.4'},
+    fields:['terminas'],
+    body(d){
+      return {
+        lt:`${d.imone} pirkimų komisija (toliau – Komisija) ${d.pirkimo_budas} vykdo ${d.pirkimas} pirkimą (toliau – Pirkimas).\nĮvertinusi Jūsų pateiktą paraišką, Komisija nustatė, kad ji atitinka Pirkimo dokumentuose nustatytus reikalavimus.\nVadovaujantis Bendrųjų Pirkimo sąlygų ${d.bps_kvietimas||'10.4'} punktu, kviečiame Jus pateikti pirminį pasiūlymą iki ${d.terminas||'___'} per CVP IS elektronines priemones.`,
+        en:`${d.imone} procurement commission (the Commission) is conducting the procurement of ${d.pirkimas} (the Procurement) ${d.pirkimo_budas_en}.\nAfter evaluating your application, the Commission has established that it complies with the requirements set out in the Procurement documents.\nPursuant to clause ${d.bps_kvietimas||'10.4'} of the General Procurement Terms, we invite you to submit an initial bid by ${d.terminas||'___'} through CVP IS electronic means.`
+      };
+    }
+  },
+  '6_kvietimas_derybu': {
+    title:'DĖL KVIETIMO Į DERYBAS',
+    titleEn:'REGARDING INVITATION TO NEGOTIATIONS',
+    addressee:'individual', psi:[], bpsAk:{}, bpsSd:{derybu:'13.2.1'},
+    fields:['derybu_data','derybu_laikas','derybu_budas','derybu_objektas'],
+    body(d){
+      const budasMap = {gyvas:'gyvas susitikimas (LITGRID biuras)',teams:'telekonferencija per MS Teams',skype:'telekonferencija per Skype',cvpis:'CVP IS priemonėmis'};
+      const budas = budasMap[d.derybu_budas] || d.derybu_budas || '___';
+      const objMap = {kaina:'pasiūlymo kainos',kaina_salygos:'pasiūlymo kainos ir kitų pasiūlymo sąlygų'};
+      const obj = objMap[d.derybu_objektas] || d.derybu_objektas || 'pasiūlymo sąlygų';
+      return {
+        lt:`${d.imone} pirkimų komisija (toliau – Komisija) ${d.pirkimo_budas} vykdo ${d.pirkimas} pirkimą (toliau – Pirkimas).\nĮvertinusi Jūsų pateiktą pirminį pasiūlymą, Komisija, vadovaujantis Bendrųjų Pirkimo sąlygų ${d.bps_derybu||'13.2.1'} punktu, kviečia Jus į derybas:\n• Derybų data: ${d.derybu_data||'___'}\n• Derybų laikas: ${d.derybu_laikas||'___'}\n• Derybų būdas: ${budas}\n• Derybų objektas: derėtis dėl ${obj}\nApie derybų eigą ir rezultatus bus parengtas derybų protokolas, kurį pasirašys Komisijos pirmininkas ir Jūsų įgaliotas atstovas.`,
+        en:`${d.imone} procurement commission (the Commission) is conducting the procurement of ${d.pirkimas} (the Procurement) ${d.pirkimo_budas_en}.\nAfter evaluating your initial bid, the Commission, pursuant to clause ${d.bps_derybu||'13.2.1'} of the General Procurement Terms, invites you to negotiations:\n• Date: ${d.derybu_data||'___'}\n• Time: ${d.derybu_laikas||'___'}\n• Method: ${budas}\n• Subject: negotiations on ${obj}\nA negotiation protocol will be prepared and signed by the Commission Chair and your authorised representative.`
+      };
+    }
+  },
+  '7_1_kvietimas_gp': {
+    title:'DĖL KVIETIMO TEIKTI GALUTINĮ PASIŪLYMĄ',
+    titleEn:'REGARDING INVITATION TO SUBMIT FINAL BID',
+    addressee:'individual', psi:[], bpsAk:{}, bpsSd:{}, fields:['terminas'],
+    body(d){
+      return {
+        lt:`${d.imone} pirkimų komisija (toliau – Komisija) ${d.pirkimo_budas} vykdo ${d.pirkimas} pirkimą (toliau – Pirkimas).\nĮvykus deryboms ir aptarus Pirkimo sąlygas, Komisija kviečia Jus pateikti galutinį pasiūlymą iki ${d.terminas||'___'} per CVP IS elektronines priemones.\nPrašome atsižvelgti į derybų metu aptartas sąlygas, kurios užfiksuotos derybų protokole.`,
+        en:`${d.imone} procurement commission (the Commission) is conducting the procurement of ${d.pirkimas} (the Procurement) ${d.pirkimo_budas_en}.\nFollowing negotiations and discussion of the Procurement terms, the Commission invites you to submit a final bid by ${d.terminas||'___'} through CVP IS electronic means.\nPlease take into account the terms discussed during the negotiations, which have been recorded in the negotiation protocol.`
+      };
+    }
   }
 };
 
@@ -3229,10 +3283,18 @@ function renderInlinePnFields(templateId){
   if(fields.includes('eile')) html += `<div class="epso-fg" style="grid-column:1/-1"><label>Pasiūlymų eilė (auto)</label><textarea id="ipn-eile" rows="3" readonly style="background:var(--epso-green-5)"></textarea></div>`;
   if(fields.includes('laimetojas')) html += `<div class="epso-fg"><label>Laimėtojas</label><input type="text" id="ipn-laimetojas"></div>`;
   if(fields.includes('vertinimo_lentele')) html += `</div><div class="epso-fg"><label>Vertinimo lentelė</label><textarea id="ipn-vertinimo_lentele" rows="4" placeholder="Tiekėjas|Kaina|C|T|S"></textarea></div><div class="epso-form-grid">`;
+  // NAUJI LAUKAI inline modale
+  if(fields.includes('klausimai_atsakymai')) html += `</div><div class="epso-fg" style="margin-top:12px"><label>Klausimai ir atsakymai / patikslinimai</label><textarea id="ipn-klausimai_atsakymai" rows="5" placeholder="1. Klausimas: ...&#10;   Atsakymas: ...&#10;&#10;2. Klausimas: ...&#10;   Atsakymas: ..."></textarea></div><div class="epso-form-grid">`;
+  if(fields.includes('naujas_terminas')) html += `<div class="epso-fg"><label>Naujas pasiūlymų pateikimo terminas</label><input type="text" id="ipn-naujas_terminas" placeholder="pvz.: 2026-06-15 12:00"></div>`;
+  if(fields.includes('terminas')) html += `<div class="epso-fg"><label>Terminas</label><input type="text" id="ipn-terminas" placeholder="pvz.: 2026-06-15 12:00"></div>`;
+  if(fields.includes('derybu_data')) html += `<div class="epso-fg"><label>Derybų data</label><input type="date" id="ipn-derybu_data"></div>`;
+  if(fields.includes('derybu_laikas')) html += `<div class="epso-fg"><label>Derybų laikas</label><input type="time" id="ipn-derybu_laikas"></div>`;
+  if(fields.includes('derybu_budas')) html += `<div class="epso-fg"><label>Derybų būdas</label><select id="ipn-derybu_budas"><option value="gyvas">Gyvas susitikimas</option><option value="teams" selected>MS Teams</option><option value="skype">Skype</option><option value="cvpis">CVP IS priemonėmis</option></select></div>`;
+  if(fields.includes('derybu_objektas')) html += `<div class="epso-fg"><label>Derybų objektas</label><select id="ipn-derybu_objektas"><option value="kaina">Pasiūlymo kainos</option><option value="kaina_salygos">Kainos ir kitų sąlygų</option></select></div>`;
   html += '</div>';
   body.innerHTML = html;
 
-  // Auto-eile
+  // Auto-eile + paimam Protokolo 2 (klausimai-atsakymai + termino pratęsimas) duomenis
   setTimeout(()=>{
     if(fields.includes('eile')){
       const sorted = [...inlinePnTiekejai].filter(t=>t.selected&&t.vieta).sort((a,b)=>Number(a.vieta)-Number(b.vieta));
@@ -3240,6 +3302,35 @@ function renderInlinePnFields(templateId){
       const el = document.getElementById('ipn-eile');
       if(el) el.value = txt;
       if(sorted.length>0 && document.getElementById('ipn-laimetojas')) document.getElementById('ipn-laimetojas').value = sorted[0].pavadinimas;
+    }
+    // A2/D2/N2 Klausimai-atsakymai: paimam termino pratęsimo duomenis iš protokolo formos
+    if(fields.includes('naujas_terminas')){
+      const protoTerm = document.getElementById('pf-q-new-term')?.value || document.getElementById('pf-naujas-terminas')?.value || '';
+      const protoPriez = document.getElementById('pf-q-reason')?.value || document.getElementById('pf-pratesimo-priezastis')?.value || '';
+      const ntEl = document.getElementById('ipn-naujas_terminas'); if(ntEl && protoTerm) ntEl.value = protoTerm;
+      const pzEl = document.getElementById('ipn-priezastis'); if(pzEl && protoPriez) pzEl.value = protoPriez;
+    }
+    if(fields.includes('klausimai_atsakymai')){
+      const klRows = [...document.querySelectorAll('#pf-q-list .klausimas-row, #pf-klausimai-list .klausimas-row')];
+      if(klRows.length > 0){
+        const txt = klRows.map((r,i) => {
+          const kl = r.querySelector('.kl-text, .q-klausimas')?.value || '';
+          const ats = r.querySelector('.kl-atsakymas, .q-atsakymas')?.value || '';
+          return `${i+1}. Klausimas: ${kl}\n   Atsakymas: ${ats}`;
+        }).join('\n\n');
+        const el = document.getElementById('ipn-klausimai_atsakymai'); if(el && txt) el.value = txt;
+      }
+    }
+    // D6/N4 — derybų duomenys iš protokolo
+    if(fields.includes('derybu_data')){
+      const firstDerybu = document.querySelector('.d6-row .d6-vk[value="derybos"], .d6-row');
+      const firstRow = document.querySelector('#pf-d6-list .d6-row');
+      if(firstRow){
+        const d = firstRow.querySelector('.d6-der-data')?.value; if(d){ const el=document.getElementById('ipn-derybu_data'); if(el) el.value=d; }
+        const l = firstRow.querySelector('.d6-der-laikas')?.value; if(l){ const el=document.getElementById('ipn-derybu_laikas'); if(el) el.value=l; }
+        const b = firstRow.querySelector('.d6-der-budas')?.value; if(b){ const el=document.getElementById('ipn-derybu_budas'); if(el) el.value=b; }
+        const o = firstRow.querySelector('.d6-derderfor')?.value; if(o){ const el=document.getElementById('ipn-derybu_objektas'); if(el) el.value=o; }
+      }
     }
   }, 50);
 }
@@ -3296,6 +3387,13 @@ function buildInlinePnNotifs(templateId, protoId){
       atidejimas: fdata.atidejimas||getAtidejimoTerminas(pk.val_cat).tekstas,
       eile: eile,
       laimetojas: fdata.laimetojas||(eile[0]?eile[0].tiekejas:''),
+      klausimai_atsakymai: fdata.klausimai_atsakymai||'',
+      naujas_terminas: fdata.naujas_terminas||'',
+      terminas: fdata.terminas||'',
+      derybu_data: fdata.derybu_data||'',
+      derybu_laikas: fdata.derybu_laikas||'',
+      derybu_budas: fdata.derybu_budas||'',
+      derybu_objektas: fdata.derybu_objektas||'',
       bps_eile: bpsMap.eile||'', bps_konfid: bpsMap.konfid||'',
       bps_taisymo: bpsMap.taisymo||'', bps_neistaisymo: bpsMap.neistaisymo||'',
       bps_atmetimo: bpsMap.atmetimo||'', bps_galiojimas: bpsMap.galiojimas||''
@@ -3725,6 +3823,14 @@ function renderPnFields(tId){
   if(fields.includes('prasomas_terminas')) html += `<div class="epso-fg"><label>Prašomas pratęsimas (kal. d.)</label><input type="number" id="pn-f-prasomas_terminas" placeholder="30"></div>`;
   if(fields.includes('priezastis')) html += `<div class="epso-fg"><label>Pratęsimo priežastis</label><input type="text" id="pn-f-priezastis" placeholder="gautos pretenzijos nagrinėjimo"></div>`;
   if(fields.includes('vertinimo_lentele')) html += `</div><div class="epso-fg" style="margin-top:12px"><label>Vertinimo lentelė (S = C + T)</label><textarea id="pn-f-vertinimo_lentele" rows="5" placeholder="Tiekėjas|Kaina be PVM|C (kainos balai)|T (kokybės balai)|S = C+T&#10;UAB A|100000|80|15|95&#10;UAB B|110000|72|18|90"></textarea><div class="hint">Eilutėmis: stulpeliai atskirti vertikaliu brūkšniu „|". Pirmoji eilutė — antraštės.</div></div><div class="epso-form-grid">`;
+  // NAUJI LAUKAI
+  if(fields.includes('klausimai_atsakymai')) html += `</div><div class="epso-fg" style="margin-top:12px"><label>Klausimai ir atsakymai / patikslinimai</label><textarea id="pn-f-klausimai_atsakymai" rows="5"></textarea></div><div class="epso-form-grid">`;
+  if(fields.includes('naujas_terminas')) html += `<div class="epso-fg"><label>Naujas pasiūlymų terminas</label><input type="text" id="pn-f-naujas_terminas"></div>`;
+  if(fields.includes('terminas')) html += `<div class="epso-fg"><label>Terminas</label><input type="text" id="pn-f-terminas"></div>`;
+  if(fields.includes('derybu_data')) html += `<div class="epso-fg"><label>Derybų data</label><input type="date" id="pn-f-derybu_data"></div>`;
+  if(fields.includes('derybu_laikas')) html += `<div class="epso-fg"><label>Derybų laikas</label><input type="time" id="pn-f-derybu_laikas"></div>`;
+  if(fields.includes('derybu_budas')) html += `<div class="epso-fg"><label>Derybų būdas</label><select id="pn-f-derybu_budas"><option value="gyvas">Gyvas</option><option value="teams" selected>MS Teams</option><option value="skype">Skype</option><option value="cvpis">CVP IS</option></select></div>`;
+  if(fields.includes('derybu_objektas')) html += `<div class="epso-fg"><label>Derybų objektas</label><select id="pn-f-derybu_objektas"><option value="kaina">Pasiūlymo kainos</option><option value="kaina_salygos">Kainos ir kitų sąlygų</option></select></div>`;
 
   if(fields.includes('atidejimas')){
     const term = getAtidejimoTerminas(pk?.val_cat);
@@ -3812,6 +3918,13 @@ function generatePranesimai(){
       atidejimas: fdata.atidejimas||getAtidejimoTerminas(pk.val_cat).tekstas,
       eile: eile,
       laimetojas: fdata.laimetojas||(eile[0]?eile[0].tiekejas:''),
+      klausimai_atsakymai: fdata.klausimai_atsakymai||'',
+      naujas_terminas: fdata.naujas_terminas||'',
+      terminas: fdata.terminas||'',
+      derybu_data: fdata.derybu_data||'',
+      derybu_laikas: fdata.derybu_laikas||'',
+      derybu_budas: fdata.derybu_budas||'',
+      derybu_objektas: fdata.derybu_objektas||'',
       bps_eile: bpsMap.eile||'',
       bps_konfid: bpsMap.konfid||'',
       bps_taisymo: bpsMap.taisymo||'',
