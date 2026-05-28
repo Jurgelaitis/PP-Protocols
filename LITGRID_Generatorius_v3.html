@@ -315,6 +315,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
   <div class="spacer"></div>
   <div class="breadcrumb" id="breadcrumb"></div>
   <div style="display:flex;gap:8px;margin-left:16px">
+    <div id="save-state-badge" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;font-size:12px;font-weight:600;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);transition:all 250ms ease" title="Pakeitimų saugojimo būsena"><span id="save-state-dot" style="width:8px;height:8px;border-radius:50%;background:#22C55E"></span><span id="save-state-text">✓ Išsaugota</span></div>
     <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="exportData()" title="Eksportuoti duomenis">⬇ Eksportas</button>
     <label class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);cursor:pointer" title="Importuoti duomenis">⬆ Importas<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
     <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="openGlobalAudit()" title="Globalus audito žurnalas (PSĮ 103 str.)">📊 Auditas</button>
@@ -329,7 +330,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
       <h2 style="font-size:20px;font-weight:700">Pirkimai</h2>
       <p style="font-size:13px;color:#6b7a99;margin-top:2px">Pasirinkite pirkimą arba sukurkite naują</p>
     </div>
-    <button class="btn btn-primary" onclick="showPage('page-new-pk')">+ Naujas pirkimas</button>
+    <div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="openCopyModal()" title="Sukurti pirkimą pagal egzistuojantį šabloną">📋 Kopijuoti pagal...</button><button class="btn btn-primary" onclick="showPage('page-new-pk')">+ Naujas pirkimas</button></div>
   </div>
   <div class="pk-grid" id="pk-list">
     <div class="empty-state"><div class="icon">📋</div><p>Dar nėra pirkimų.<br>Spauskite <strong>+ Naujas pirkimas</strong> kad pradėtumėte.</p></div>
@@ -397,12 +398,36 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
         </div>
         <div class="form-grid full">
           <div class="chk-row" style="margin-bottom:0">
-            <input type="checkbox" id="new-pk-parts" onchange="toggleNewParts()">
+            <input type="checkbox" id="new-pk-parts" onchange="toggleNewParts();toggleNotSplitWarning()">
             <label for="new-pk-parts">Pirkimo objektas skaidomas į dalis</label>
           </div>
           <div id="new-parts-container" style="display:none;margin-top:10px;padding-left:24px">
             <div id="new-parts-list"></div>
             <button class="btn-add" onclick="addNewPart()" style="margin-top:6px">+ Pridėti dalį</button>
+          </div>
+          <!-- Įspėjimas (5): jei neskaidoma — pagrindimas -->
+          <div id="not-split-warning" style="margin-top:10px;padding:10px 14px;background:#fff5e6;border-left:3px solid var(--epso-warning);border-radius:6px;font-size:13px">
+            ⚠️ <strong>Pirkimo objektas nėra skaidomas į dalis.</strong> Įvertinkite, ar reikalingas pagrindimas dėl neskaidymo (Pirkimų įstatymo 28 str.). Jei reikalingas — pridėkite jį prie protokolo priedų.
+          </div>
+        </div>
+        <!-- (3) Konfidencialių priedų žyma -->
+        <div class="form-grid full">
+          <div class="chk-row">
+            <input type="checkbox" id="new-pk-confidential">
+            <label for="new-pk-confidential">Pirkime yra konfidencialių priedų</label>
+          </div>
+          <div id="new-pk-confidential-info" style="display:none;margin-top:8px;padding:10px 14px;background:var(--epso-cyan-5);border-left:3px solid var(--epso-cyan);border-radius:6px;font-size:13px">
+            ℹ️ Protokolo 1 (Pirkimo organizavimas) SVARSTYTA dalyje bus pridėtas tekstas dėl konfidencialių dokumentų pateikimo per CVP IS be atskiro protokolo.
+          </div>
+        </div>
+        <!-- (6) CPO katalogo žyma -->
+        <div class="form-grid full">
+          <div class="chk-row">
+            <input type="checkbox" id="new-pk-cpo-applicable" onchange="toggleCpoApplicable()">
+            <label for="new-pk-cpo-applicable">Pirkimo objektas atitinka CPO katalogą, bet pirkimas vykdomas ne per CPO</label>
+          </div>
+          <div id="new-pk-cpo-info" style="display:none;margin-top:8px;padding:10px 14px;background:#fff5e6;border-left:3px solid var(--epso-warning);border-radius:6px;font-size:13px">
+            ⚠️ Privaloma pridėti pagrindimą dėl nepirkimo per CPO prie protokolo priedų (Pirkimų įstatymo 81 str.).
           </div>
         </div>
       </div>
@@ -448,6 +473,16 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
             <p>Supaprastintas, neskelbiamos derybos</p>
             <span class="proto-count">iki 8 protokolų</span>
           </div>
+          <div class="type-card" data-type="dps_steigimas" onclick="selectType(this)">
+            <h4>Dinaminė pirkimo sistema (DPS)</h4>
+            <p>DPS steigimas tarptautinės vertės pirkime</p>
+            <span class="proto-count">iki 4 protokolų</span>
+          </div>
+          <div class="type-card" data-type="dps_konkretus" onclick="selectType(this)">
+            <h4>Konkretus pirkimas pagal DPS</h4>
+            <p>Konkretus pirkimas iš jau įsteigtos DPS</p>
+            <span class="proto-count">iki 5 protokolų</span>
+          </div>
         </div>
         <hr class="divider">
         <div class="section-title">Vertinimo kriterijus</div>
@@ -459,14 +494,6 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
               <option value="kainos ir kokybės santykį" selected>Kainos ir kokybės santykį</option>
               <option value="sąnaudas">Sąnaudas</option>
               <option value="sąnaudų ir kokybės santykį">Sąnaudų ir kokybės santykį</option>
-            </select>
-          </div>
-          <div class="fg">
-            <label>Pirkimo vertės kategorija</label>
-            <select id="new-val-cat">
-              <option value="Tarptautinės vertės pirkimas">Tarptautinės vertės pirkimas</option>
-              <option value="Supaprastintas pirkimas">Supaprastintas pirkimas</option>
-              <option value="Mažos vertės pirkimas">Mažos vertės pirkimas</option>
             </select>
           </div>
         </div>
@@ -576,6 +603,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
     <button class="btn btn-secondary btn-sm" onclick="editProcurement()">✏ Redaguoti</button>
     <button class="btn btn-secondary btn-sm" onclick="openProcurementAudit()" title="Šio pirkimo audito žurnalas">📜 Auditas</button>
     <button class="btn btn-secondary btn-sm" onclick="openRiskPanel()" title="Pirkimo rizikų panelis">⚠️ Rizikos</button>
+    <button class="btn btn-secondary btn-sm" id="archive-btn" onclick="toggleArchive()" title="Archyvuoti pirkimą (saugoma istorijoje)">📦 Archyvuoti</button>
     <button class="btn btn-danger btn-sm" onclick="deleteProcurement()">🗑 Ištrinti</button>
   </div>
   <div id="detail-header" style="margin-bottom:18px"></div>
@@ -852,6 +880,36 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
   </div>
 </div>
 
+<!-- ══════════════════════════ MODAL: Kopijuoti pirkimą ══════════════════════════ -->
+<div id="copy-pk-modal" class="epso-modal">
+  <div class="epso-modal__content" style="max-width:700px">
+    <div class="epso-modal__header">
+      <h2 style="margin:0;font-size:18px">📋 Kopijuoti pirkimą pagal šabloną</h2>
+      <button class="btn btn-secondary btn-sm" onclick="closeCopyModal()">✕</button>
+    </div>
+    <div class="epso-modal__body">
+      <p style="margin-bottom:14px;color:var(--epso-graphite-50);font-size:13px">Pasirinkite egzistuojantį pirkimą — jo duomenys (komisija, pirkimo būdas, parametrai) bus nukopijuoti į naują pirkimą. <strong>NEKOPIJUOJAMA:</strong> ID, sukūrimo data, sugeneruoti protokolai, pranešimai, audito istorija.</p>
+
+      <div class="epso-fg" style="margin-bottom:14px">
+        <label>Naujo pirkimo Nr. *</label>
+        <input type="text" id="copy-new-id" placeholder="pvz.: 26-PK10" style="padding:10px 12px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans">
+      </div>
+
+      <div class="epso-fg" style="margin-bottom:14px">
+        <label>Naujo pirkimo pavadinimas (pasirinktinai)</label>
+        <input type="text" id="copy-new-name" placeholder="Palikite tuščią — bus naudojamas šaltinio pavadinimas" style="padding:10px 12px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans">
+      </div>
+
+      <div style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--epso-graphite)">Šaltinio pirkimas:</div>
+      <div id="copy-source-list" style="max-height:340px;overflow-y:auto;border:1px solid var(--epso-graphite-15);border-radius:8px"></div>
+    </div>
+    <div class="epso-modal__footer">
+      <button class="btn btn-secondary" onclick="closeCopyModal()">Atšaukti</button>
+      <button class="btn btn-primary" id="copy-confirm-btn" onclick="confirmCopy()" disabled>📋 Kopijuoti</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════════ MODAL: Globalus auditas ══════════════════════════ -->
 <div id="global-audit-modal" class="epso-modal">
   <div class="epso-modal__content" style="max-width:1000px">
@@ -874,6 +932,30 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 // DATA LAYER
 // ════════════════════════════════════════════════════════
 const STORE_KEY = 'litgrid_procurements_v2';
+
+// ════════════════════════════════════════════════════════
+// SAVE STATE INDIKATORIUS
+// ════════════════════════════════════════════════════════
+let _saveStateTimer = null;
+function setSaveState(state) {
+  const dot = document.getElementById('save-state-dot');
+  const text = document.getElementById('save-state-text');
+  if (!dot || !text) return;
+  const states = {
+    saving: { color: '#FAB03B', text: '⏳ Saugoma...', textColor: '#fff' },
+    saved: { color: '#22C55E', text: '✓ Išsaugota', textColor: '#fff' },
+    error: { color: '#DB354A', text: '⚠ Klaida', textColor: '#fff' },
+    idle: { color: '#737483', text: '● Sinchronizuota', textColor: '#fff' }
+  };
+  const s = states[state] || states.idle;
+  dot.style.background = s.color;
+  text.textContent = s.text;
+
+  if (_saveStateTimer) clearTimeout(_saveStateTimer);
+  if (state === 'saved') {
+    _saveStateTimer = setTimeout(() => setSaveState('idle'), 2500);
+  }
+}
 
 const LOGO_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAaQAAABkCAYAAADJ00Q1AAALS0lEQVR4nO3decwkRR3G8e8rl7haBoSoUAqCEEEw4IKSEJDEC1BwQQmHkiYqCCuBGCBBDZJIsiEcCRA5BA+KCBKVw6CCCniAWZBDVl3/wAALlhgBAYtDOZbXP3peeffNzNvVPX3U9DyfZAPZra7+zbD081Z3ddXM7OwsIiIiXXtN1wWIiIiAAklERBKhQBIRkSQokEREJAkKJBERSYICSUREkqBAEhGRJCiQREQkCQokERFJggJJRESSoEASEZEkrN91AeMyNltnMb7g3UxXtYiISHUaIYmISBIUSCIikgQFkoiIJEGBJCIiSVAgiYhIEhRIIiKSBAWSiIgkQYEkIiJJUCCJiEgSGg+khSspTLI+fRYRkdQ0GkhzF/A+XMj79FlERFLU2Fp2Cy/cxmazk7rOXJ8+yziMzS4HsoJmpwTvzmmhHBkhxf9Oxmb7AjcWNHsgePfONuqRNDU2Qhp2wZ7E0cWwmqcxjEREmtboat/Bu5lJHl2kFEbGZnsAKyOanhu8O7npekRE6tb49hOTGkophVEfGZvdDSwtaHZA8O4nbdQjIt1rZdr3pN2+UxiJiLSvtfeQJiWUFEYiIt1o9cXY1ENJYSQi0p3WV2pINZQURiIi3epk6aA6QsnYbHbYMXO/X6Y/hZGISPcan2U3SpXZd1VCa/75YvtUGA0XvDsKOKrjMqSA/jvJpOp0cdXYkVLZEc8ww/pQGImIpKOzEdKcopFS3c+X5vpWGE0fY7ONgGXAgeTvQFlgI+AZYA1wJ3BN8O7mjkocythsL+BgYA9gW+CNwFrgUeC04N33W6xlA+AT5N/h7sDbePU7fBC4A/hR8O7XbdUk/dF5IMHoUKpyXEyQKYyqqbpGmrHZMuC6Cqe8wdii03FN8O5TRY2MzY4EzgS2GPLHmwx+7Qoca2x2H7A8eLdycGwt67CV/f6MzZYCF5Nf+IfZFthq3PPEMjb7JHDusHOSf39LB7++aGx2F/l3eHeZc8h0SyKQYHi4jGoX29/cvxf1qzDqr8Go6HLgsBKH7QLcZmx2UvDu/CbqKmJs9lngEmCDgqaN/901NlsP+AZwbInDdgdWGpudGLy7qJnKpG+SCSRYPJTGCY3FRk0Ko/4yNtsQ+DHw0QqHrwecNwi0P9ZaWAFjswz4FnFh0+jfX2OzGeAK4IgKh68PXGhstjGwutbCpJemZsfYUUGXwjtQ0pizqBZG851J/vymLUuBS4kPmqZ/oDqVamE039nAQTXUIj2XVCCVfe5TR7/j9i1pMjbbBzihhq5mgKNr6CfWYcCGJdo3FkjGZjsAp9fQ1QxwTA39SM8lE0gxoVAlOGJv0ymU+mNwm+mbtPB8JQFNfsZLyGfQibQimUBaKHg3M25wLBZGenbUa/sD20e2fQRYDmwDvBbYDPgQcHUzpZUyC/yA/HaXJa9vc/JJF0eQP9t5vokTG5vtCuwd2fwR4DjS/A5lgiQxqWGxkCm7osM47xlNwj5Nkyh4dz0LfpJveD+k4yPb/Rb4WPDu2Xm/9wJwC3CLsdkN5Bf99SrUMK4ngWXBu9sW/P4LwBPAKqDJ94+WR7a7Hdhvke/wRuC7JPzDr6Qjyb8kC0Nh1EipzESFYX0ofPpnMLNun4imjwMHLbiQriN4dxX5xIi2vQzsOySM2hQzCeEpir/DK4ALaqtKei3JQBqmjmnfMhV2I79tVOSc4N2TEe1WACMvuA05P3h3V8vn/D9js+2BN0U0vSB490REuzOAF8erSqZB54FU5plQG8GiyQ0Tb7fIdlHPNwY//be5jfos+UuoXXp/ZLsfxjQaBP8vq5cj06LzQFqo7dGMRk+98+aINo8F7x4p0Weby9/8OXi3psXzDbN1RJvngL+U6FNLCEmh0pMamh5BNNH/ONtW1EGh16pNI9r8vWSfZduP454WzzXKJhFtHgrelfn/5IGqxcj0SG6EJDKm10e0ea5kn20+Q3q0xXONEhNIz5TsM1QpRKaLAkn6JuZC+bqSfS6pUkhFKVy4NaKXTiiQpG9iZs69pWSfW1YppKK1LZ5rlJjv8A0l+zRVCpHpUunF2DqfiYzazyimbRll+tUzn4n2z4g2WxibbR68ezyyz9iZe33xVESbdxibzZR4jrTtOAXJdCg9QuryYl313AqYqfL7yHZRq08bmy0BPl69nIn0cESbJcCOJfqctlCXCpK7ZdfUit9t9ilR/hvRJuYF14XuBf4T0e7kwV5HRU6l/O2pSXdHZLtDYhoZm20KfLh6OTItOg+k2NFLk9tPVKlHxhbz8P59pTv17iXg5oim2wGXG5uNvG1tbHYoeSBNleDd/cC/IpqeYGy2WUS70yi3pYZMqSQWVy1SxyhGC6cmJ2bJmeONzdYAPwMeDd7FLj9zIXBARLvDgJ2Mzc4GfkX+/GkJ+Wran2f8jekm2fXA5wrabAJca2y2/6j17IzNjqSefalkCiQZSPPDo2ih1MX+vGiV8J7erjvJ2OykMfv4efBu31qqGe1PEW02Jg8XAIzNFv75w8G7rYcc9wvyLbPfHXGOnQAX0W7aXERxIAHsBaw2NlsB3AT8g1dD/Wjg8KYKlP7p/JYdjL5NVmULiaK2RVtdxPYtY7uzqY4HM7++ALzS1Dn6Lnh3LxC72vjbyTfzW0O+9cSTwK0ojKSkJAJpmHHDaLFjFtu6QlpzO3GzuSoJ3v0OOLeGrmaBy2roZxIdh1bplhYlE0hFYdP09hMaHbUrePcKze819BXgp2P2cSpwbQ21TJzg3Wrg6zV1N62hLiUkE0gwOhTqCIvF+lAYdSN4dxFwXYP9vwwcDHyvwuFrgRODd2cRN/28ryOJFeTbqI/jy0xpqEs5SQVSmR1gpTcOIf8p/PkmOg/evRi8OxL4DPGrdq8C9greze10GrOCeNub+LVi8Dzu01Qb4awFvhS8O7PeqqSvkgmkotAZ57lP0bEKvO4E79YG704nXy/uOPLRzGrgMfIH5HWd50pgG/Kp3lcB95OH4Frg38B95A/mPxK82yV4t3Le4TtEnMLXVWtqgncvB++OAQ4F/hZ52Cpg7+DdeY0VJr0zMzvb/bV41ASGoqAY1Sbm2FH9lT1G+s/Y7B7gvQXNVgTvvtpGPV0yNtuAfNmlA4HdAQtsRD5CfIh8lYdrg3faIVZK6zyQqrxnNK7Yd5xEjM32JJ8RWGS/4N1NTdcj0med3rKLCYS6A2J+f2XfU5LJYmy2s7HZt43N3lrxeEPcs5Onyd+7EZExdDZCqjI6aWv7iZhaJH3GZrsAfyDfIfZi4JLgXdRW2sZmOwJXkq84UOSc4N0pFcsUkYFOAqmOAIgJpzJ9KpT6Z14gzZkFfkM+mrmN/JnHE8BL5BvIbUm+TcIyYH/i7iA8BbwrePdYXXWLTKvWA6nuC3+d/SmU+mVIIDXh8ODd1Q2fQ2QqtPoMKfULvp4pSUlfUxiJ1Ke1QEo9jOYolCTC88Dy4N0ZXRci0ietBNKkhNEchZIs4lZg5+DdxV0XItI3jQfSpIXRHIVSL6wCPgBcStyGgKM8C3wH2DN498Hg3YN1FCci62p0UkMbYdT0OSY1UGVdxmYzwHuAfQb/3A7Yinx23RLyvZMC+TJCTwN/Be4Z/LorePdc60WLTJnGAqmtC3kfQk9ERBq8Zdf0igtt6tNnERFJVaPPkOYu3H24gPfps4iIpKjxSQ19uoD36bOIiKQmmf2QRERkuimQREQkCQokERFJggJJRESSoEASEZEkKJBERCQJCiQREUmCAklERJKgQBIRkSQokEREJAmNbj8hIiISSyMkERFJggJJRESSoEASEZEkKJBERCQJCiQREUmCAklERJKgQBIRkSQokEREJAkKJBERSYICSUREkvA/+ERYGOvA8IoAAAAASUVORK5CYII=';
 
@@ -1026,7 +1108,14 @@ function loadStore() {
   catch { return {}; }
 }
 function saveStore(data) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  try {
+    setSaveState('saving');
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    setSaveState('saved');
+  } catch(e) {
+    setSaveState('error');
+    console.error('Save error:', e);
+  }
 }
 function getProcurements() { return loadStore(); }
 function getProcurement(id) { return loadStore()[id]; }
@@ -1097,6 +1186,19 @@ function getSequence(type) {
   ];
   if (type.startsWith('atviras')) return ATVIRAS;
   if (type.startsWith('derybos')) return DERYBOS;
+  if (type === 'dps_steigimas') return [
+    {id:'A1', num:'1', name:'DPS steigimo protokolas', desc:'DPS sąlygų tvirtinimas'},
+    {id:'A2', num:'2', name:'Klausimai, prašymai, atsakymai', desc:'Atsakymų į klausimus tvirtinimas'},
+    {id:'A3', num:'3', name:'Susipažinimas su paraiškomis', desc:'Dalyvauti DPS paraiškų vertinimas'},
+    {id:'A4', num:'4', name:'Tiekėjų įtraukimas į DPS', desc:'Atrinktų tiekėjų patvirtinimas DPS'},
+  ];
+  if (type === 'dps_konkretus') return [
+    {id:'A1', num:'1', name:'Konkretaus pirkimo pagal DPS organizavimo protokolas', desc:'Konkretaus pirkimo sąlygų tvirtinimas'},
+    {id:'A2', num:'2', name:'Klausimai, prašymai, atsakymai', desc:'Atsakymų į klausimus tvirtinimas'},
+    {id:'A3', num:'3', name:'Susipažinimas su pasiūlymais', desc:'Pasiūlymų atplėšimas'},
+    {id:'A4', num:'4', name:'Pasiūlymų vertinimas', desc:'Atmetimai, tikslinimai, laimėtojo nustatymas'},
+    {id:'A5', num:'5', name:'Kvalifikacijos vertinimas', desc:'NMK + laimėtojo nustatymas'},
+  ];
   if (type.startsWith('neskelbiamos')) return [
     {id:'N1', num:'1', name:'Pirkimo organizavimo protokolas', desc:'Pirkimo sąlygų tvirtinimas'},
     {id:'N2', num:'2', name:'Klausimai, prašymai, atsakymai', desc:'Atsakymų į klausimus tvirtinimas'},
@@ -1109,9 +1211,21 @@ function getSequence(type) {
   return ATVIRAS;
 }
 
+function deriveValCat(type){
+  // Auto-derivacija iš pirkimo būdo (vietoj atskiro val_cat lauko)
+  if(!type) return 'Tarptautinės vertės pirkimas';
+  if(type.includes('tarptautinis')) return 'Tarptautinės vertės pirkimas';
+  if(type.includes('supaprastintas')) return 'Supaprastintas pirkimas';
+  if(type.includes('mazos') || type.includes('maza')) return 'Mažos vertės pirkimas';
+  if(type.includes('dps')) return 'Tarptautinės vertės pirkimas'; // DPS dažnai tarptautinė
+  return 'Supaprastintas pirkimas';
+}
+
 function typeLabel(type) {
   const map = {
     atviras_tarptautinis: 'Tarptautinis — Atviras konkursas',
+    dps_steigimas: 'DPS — Dinaminė pirkimo sistema (steigimas)',
+    dps_konkretus: 'DPS — Konkretus pirkimas pagal DPS',
     atviras_supaprastintas: 'Supaprastintas — Atviras konkursas',
     derybos_tarptautinis: 'Tarptautinis — Skelbiamos derybos',
     derybos_supaprastintas: 'Supaprastintas — Skelbiamos derybos',
@@ -1155,24 +1269,144 @@ function toast(msg, type='ok') {
 // ════════════════════════════════════════════════════════
 // DASHBOARD
 // ════════════════════════════════════════════════════════
+let dashFilter = { search: '', type: 'all', status: 'all', showArchived: false };
+
 function renderDashboard() {
   const store = getProcurements();
   const list = document.getElementById('pk-list');
   const pks = Object.values(store);
+
+  // === SMART STATISTIKA — viršuje ===
+  const stats = { total: pks.length, inProgress: 0, done: 0, notStarted: 0, totalValue: 0, highRisk: 0 };
+  // Statistika skaičiuojama tik aktyviems (ne archyvuotiems)
+  const activePks = pks.filter(pk => !pk.archived);
+  stats.total = activePks.length;
+  stats.archived = pks.length - activePks.length;
+  activePks.forEach(pk => {
+    const seq = getSequence(pk.type);
+    const doneCount = Object.values(pk.protocols || {}).filter(p => p.done).length;
+    if(doneCount === 0) stats.notStarted++;
+    else if(doneCount >= seq.length) stats.done++;
+    else stats.inProgress++;
+    stats.totalValue += parseFloat(pk.val_ex) || 0;
+    try { if(calcRiskLevel(pk).level === 'high') stats.highRisk++; } catch(e){}
+  });
+
+  const stats_html = pks.length === 0 ? '' : `
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px">
+    <div style="background:#fff;border:1px solid var(--epso-graphite-15);border-radius:12px;padding:14px 16px;border-left:3px solid var(--epso-emerald)">
+      <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase;letter-spacing:.3px">Viso pirkimų</div>
+      <div style="font-size:22px;font-weight:800;color:var(--epso-graphite);margin-top:2px">${stats.total}</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--epso-graphite-15);border-radius:12px;padding:14px 16px;border-left:3px solid var(--epso-cyan)">
+      <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase;letter-spacing:.3px">Vykdoma</div>
+      <div style="font-size:22px;font-weight:800;color:var(--epso-graphite);margin-top:2px">${stats.inProgress}</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--epso-graphite-15);border-radius:12px;padding:14px 16px;border-left:3px solid var(--epso-green)">
+      <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase;letter-spacing:.3px">Užbaigta</div>
+      <div style="font-size:22px;font-weight:800;color:var(--epso-graphite);margin-top:2px">${stats.done}</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--epso-graphite-15);border-radius:12px;padding:14px 16px;border-left:3px solid var(--epso-warning)">
+      <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase;letter-spacing:.3px">Bendra vertė</div>
+      <div style="font-size:22px;font-weight:800;color:var(--epso-graphite);margin-top:2px">${formatMoney(stats.totalValue)} EUR</div>
+    </div>
+    ${stats.highRisk > 0 ? `<div style="background:#fff;border:1px solid var(--epso-graphite-15);border-radius:12px;padding:14px 16px;border-left:3px solid var(--epso-error)">
+      <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase;letter-spacing:.3px">Aukšta rizika</div>
+      <div style="font-size:22px;font-weight:800;color:var(--epso-error);margin-top:2px">${stats.highRisk}</div>
+    </div>` : ''}
+    ${stats.archived > 0 ? `<div style="background:#fff;border:1px solid var(--epso-graphite-15);border-radius:12px;padding:14px 16px;border-left:3px solid var(--epso-graphite-30)">
+      <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase;letter-spacing:.3px">📦 Archyvuota</div>
+      <div style="font-size:22px;font-weight:800;color:var(--epso-graphite-50);margin-top:2px">${stats.archived}</div>
+    </div>` : ''}
+  </div>`;
+
+  const filter_html = pks.length === 0 ? '' : `
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+    <input type="text" id="dash-search" placeholder="🔍 Ieškoti pagal pavadinimą ar Nr." value="${dashFilter.search}" oninput="dashFilter.search=this.value;rerenderPkList()" style="flex:1;min-width:200px;padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans;font-size:14px">
+    <select onchange="dashFilter.type=this.value;rerenderPkList()" style="padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans;font-size:14px">
+      <option value="all" ${dashFilter.type==='all'?'selected':''}>Visi tipai</option>
+      <option value="atviras" ${dashFilter.type==='atviras'?'selected':''}>Atviri konkursai</option>
+      <option value="derybos" ${dashFilter.type==='derybos'?'selected':''}>Skelbiamos derybos</option>
+      <option value="neskelbiamos" ${dashFilter.type==='neskelbiamos'?'selected':''}>Neskelbiamos derybos</option>
+      <option value="dps" ${dashFilter.type==='dps'?'selected':''}>DPS</option>
+    </select>
+    <select onchange="dashFilter.status=this.value;rerenderPkList()" style="padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans;font-size:14px">
+      <option value="all" ${dashFilter.status==='all'?'selected':''}>Visi statusai</option>
+      <option value="notstarted" ${dashFilter.status==='notstarted'?'selected':''}>Nepradėti</option>
+      <option value="inprogress" ${dashFilter.status==='inprogress'?'selected':''}>Vykdomi</option>
+      <option value="done" ${dashFilter.status==='done'?'selected':''}>Užbaigti</option>
+    </select>
+    <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;background:#fff;font-size:14px;cursor:pointer">
+      <input type="checkbox" ${dashFilter.showArchived?'checked':''} onchange="dashFilter.showArchived=this.checked;rerenderPkList()"> 📦 Archyvuoti
+    </label>
+  </div>`;
+
   if (pks.length === 0) {
     list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>Dar nėra pirkimų.<br>Spauskite <strong>+ Naujas pirkimas</strong> kad pradėtumėte.</p></div>';
     return;
   }
-  list.innerHTML = pks.map(pk => {
+
+  list.innerHTML = stats_html + filter_html + '<div id="pk-list-inner"></div>';
+  rerenderPkList();
+}
+
+function rerenderPkList(){
+  const store = getProcurements();
+  let pks = Object.values(store);
+
+  // Pagal default'inį filtrą archyvuoti pirkimai paslepti (nebent vartotojas pasirinko)
+  if(!dashFilter.showArchived){
+    pks = pks.filter(pk => !pk.archived);
+  }
+
+  if(dashFilter.search){
+    const q = dashFilter.search.toLowerCase();
+    pks = pks.filter(pk => (pk.name||'').toLowerCase().includes(q) || (pk.id||'').toLowerCase().includes(q));
+  }
+  if(dashFilter.type !== 'all'){
+    pks = pks.filter(pk => (pk.type||'').startsWith(dashFilter.type));
+  }
+  if(dashFilter.status !== 'all'){
+    pks = pks.filter(pk => {
+      const seq = getSequence(pk.type);
+      const done = Object.values(pk.protocols || {}).filter(p => p.done).length;
+      if(dashFilter.status === 'notstarted') return done === 0;
+      if(dashFilter.status === 'done') return done >= seq.length;
+      return done > 0 && done < seq.length;
+    });
+  }
+
+  const inner = document.getElementById('pk-list-inner');
+  if(!inner) return;
+  if(pks.length === 0){
+    inner.innerHTML = '<div class="empty-state" style="padding:32px"><p>Pagal filtrus pirkimų nerasta.</p></div>';
+    return;
+  }
+
+  const typeColors = {atviras_tarptautinis:'badge-blue', atviras_supaprastintas:'badge-green', derybos_tarptautinis:'badge-orange', derybos_supaprastintas:'badge-orange', neskelbiamos_tarptautinis:'badge-gray', neskelbiamos_supaprastintas:'badge-gray', dps_steigimas:'badge-blue', dps_konkretus:'badge-green'};
+  inner.innerHTML = pks.map(pk => {
     const seq = getSequence(pk.type);
     const done = Object.values(pk.protocols || {}).filter(p => p.done).length;
     const pct = seq.length > 0 ? Math.round(done / seq.length * 100) : 0;
-    const typeColors = {atviras_tarptautinis:'badge-blue', atviras_supaprastintas:'badge-green', derybos_tarptautinis:'badge-orange', derybos_supaprastintas:'badge-orange', neskelbiamos_tarptautinis:'badge-gray', neskelbiamos_supaprastintas:'badge-gray'};
-    return `<div class="pk-card" onclick="openProcurement('${pk.id}')">
+
+    let statusBadge = '';
+    if(done === 0) statusBadge = '<span style="font-size:11px;background:var(--epso-graphite-15);color:var(--epso-graphite);padding:2px 8px;border-radius:99px;font-weight:600">Nepradėtas</span>';
+    else if(done >= seq.length) statusBadge = '<span style="font-size:11px;background:var(--epso-green-15);color:var(--epso-emerald-120);padding:2px 8px;border-radius:99px;font-weight:600">✓ Užbaigtas</span>';
+    else statusBadge = `<span style="font-size:11px;background:var(--epso-cyan-5);color:var(--epso-blue);padding:2px 8px;border-radius:99px;font-weight:600">Vykdomas (${pct}%)</span>`;
+
+    let riskBadge = '';
+    try {
+      const rl = calcRiskLevel(pk);
+      if(rl.level === 'high') riskBadge = '<span style="font-size:11px;margin-left:4px;background:rgba(219,53,74,.12);color:var(--epso-error);padding:2px 8px;border-radius:99px;font-weight:600">⚠ Aukšta rizika</span>';
+    } catch(e){}
+
+    const archivedStyle = pk.archived ? 'opacity:.5;background:repeating-linear-gradient(45deg,#fafafa,#fafafa 8px,#fff 8px,#fff 16px)' : '';
+    const archivedBadge = pk.archived ? '<span style="font-size:10px;background:var(--epso-graphite);color:#fff;padding:1px 8px;border-radius:99px;font-weight:700;margin-right:6px">📦 ARCH.</span>' : '';
+    return `<div class="pk-card" onclick="openProcurement('${pk.id}')" style="${archivedStyle}">
       <div class="pk-badge">${pk.id}</div>
       <div class="pk-info">
-        <h3>${pk.name || '—'}</h3>
-        <div class="meta"><span class="badge ${typeColors[pk.type]||'badge-gray'}">${typeLabel(pk.type)}</span> &nbsp;${pk.korteles_data||''}</div>
+        <h3>${archivedBadge}${pk.name || '—'}</h3>
+        <div class="meta">${statusBadge}${riskBadge} <span class="badge ${typeColors[pk.type]||'badge-gray'}" style="margin-left:6px">${typeLabel(pk.type)}</span> &nbsp;${pk.korteles_data||''} &nbsp;·&nbsp; ${formatMoney(pk.val_ex||0)} EUR</div>
       </div>
       <div class="pk-progress">
         <div class="pct">${done}/${seq.length}</div>
@@ -1182,6 +1416,7 @@ function renderDashboard() {
     </div>`;
   }).join('');
 }
+
 
 function openProcurement(id) {
   currentPkId = id;
@@ -1201,11 +1436,18 @@ function renderDetail(id) {
   const _riskColor = _riskLvl.level==='high'?'var(--epso-error)':(_riskLvl.level==='medium'?'var(--epso-warning)':'var(--epso-emerald)');
   const _komTip = pk.komisija?.tipas==='ad_hoc' ? 'Ad hoc komisija' : 'Nuolatinė komisija';
   const _archiveYr = (pk.korteles_data ? new Date(pk.korteles_data).getFullYear() : new Date().getFullYear()) + 4;
+  // Atnaujinam Archyvuoti mygtuko tekstą + pridedam archive badge
+  setTimeout(()=>{
+    const btn = document.getElementById('archive-btn');
+    if(btn) btn.innerHTML = pk.archived ? '↩️ Atstatyti' : '📦 Archyvuoti';
+    if(btn) btn.title = pk.archived ? 'Atstatyti pirkimą į aktyvius' : 'Archyvuoti pirkimą (saugoma istorijoje)';
+  }, 50);
+  const _archivedBadge = pk.archived ? `<div style="background:rgba(115,116,131,.15);color:var(--epso-graphite);padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;margin-bottom:10px;display:inline-block">📦 ARCHYVUOTA${pk.archivedAt?' · '+new Date(pk.archivedAt).toLocaleDateString('lt-LT'):''}</div>` : '';
   document.getElementById('detail-header').innerHTML = `
     <div style="background:linear-gradient(135deg, #fff 0%, var(--epso-green-5) 100%);border:1px solid var(--epso-graphite-15);border-radius:12px;padding:18px 22px;box-shadow:0 1px 3px rgba(46,54,65,.04)">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap">
         <div style="flex:1;min-width:280px">
-          <div style="font-size:11px;font-weight:700;color:var(--epso-emerald);letter-spacing:.4px;text-transform:uppercase">${pk.id}</div>
+          ${_archivedBadge}<div style="font-size:11px;font-weight:700;color:var(--epso-emerald);letter-spacing:.4px;text-transform:uppercase">${pk.id}</div>
           <h2 style="font-size:20px;font-weight:700;margin-top:2px;color:var(--epso-graphite);line-height:1.3">${pk.name}</h2>
           <div style="margin-top:8px;font-size:13px;color:var(--epso-graphite-50);display:flex;gap:18px;flex-wrap:wrap">
             <span><strong style="color:var(--epso-graphite)">${typeLabel(pk.type)}</strong></span>
@@ -1263,8 +1505,26 @@ function togglePfVote(cb){
 function editProcurement() {
   toast('Pirkimo duomenų redagavimas — kūrimosi stadijoje', 'ok');
 }
+function toggleArchive() {
+  const pk = getProcurement(currentPkId);
+  if(!pk) return;
+  const isArchived = pk.archived || false;
+  const action = isArchived ? 'atstatyti į aktyvius' : 'archyvuoti';
+  if(!confirm(`Ar tikrai norite ${action} pirkimą ${pk.id}?\n\nArchyvuoti pirkimai nematomi pagrindiniame sąraše, bet išlieka saugykloje pagal PSĮ 103 str.`)) return;
+  pk.archived = !isArchived;
+  pk.archivedAt = pk.archived ? new Date().toISOString() : null;
+  saveProcurementData(currentPkId, pk);
+  logAudit(pk.archived ? 'ARCHIVE_PROCUREMENT' : 'UNARCHIVE_PROCUREMENT', currentPkId);
+  toast(pk.archived ? '📦 Pirkimas archyvuotas' : '↩️ Pirkimas atstatytas');
+  if(pk.archived){
+    showPage('page-dashboard');
+  } else {
+    renderDetail(currentPkId);
+  }
+}
+
 function deleteProcurement() {
-  if (!confirm(`Ar tikrai ištrinti pirkimą ${currentPkId}? Visi duomenys bus prarasti.`)) return;
+  if (!confirm(`Ar tikrai ištrinti pirkimą ${currentPkId}? Visi duomenys bus prarasti.\n\n💡 Patarimas: jei norite tik laikinai paslėpti — naudokite „📦 Archyvuoti" mygtuką.`)) return;
   deleteProc(currentPkId);
   showPage('page-dashboard');
   toast('Pirkimas ištrintas');
@@ -1279,6 +1539,24 @@ function autoCalcVat() {
   if (v && v > 0) inc.value = (v * 1.21).toFixed(2);
   else if (!v) inc.value = '';
 }
+function toggleNotSplitWarning(){
+  const isSplit = document.getElementById('new-pk-parts').checked;
+  const w = document.getElementById('not-split-warning');
+  if(w) w.style.display = isSplit ? 'none' : 'block';
+}
+function toggleCpoApplicable(){
+  const c = document.getElementById('new-pk-cpo-applicable').checked;
+  const info = document.getElementById('new-pk-cpo-info');
+  if(info) info.style.display = c ? 'block' : 'none';
+}
+
+document.addEventListener('change', e => {
+  if(e.target.id === 'new-pk-confidential'){
+    const i = document.getElementById('new-pk-confidential-info');
+    if(i) i.style.display = e.target.checked ? 'block' : 'none';
+  }
+});
+
 function toggleNewParts() {
   const c = document.getElementById('new-parts-container');
   c.style.display = document.getElementById('new-pk-parts').checked ? 'block' : 'none';
@@ -1403,10 +1681,12 @@ function saveProcurement() {
     obj_type: document.querySelector('input[name="new-obj-type"]:checked').value,
     terminas: document.getElementById('new-pk-terminas').value,
     parts_enabled: document.getElementById('new-pk-parts').checked,
+    confidential_appendix: document.getElementById('new-pk-confidential')?.checked || false,
+    cpo_applicable: document.getElementById('new-pk-cpo-applicable')?.checked || false,
     parts,
     type: document.querySelector('.type-card.selected').dataset.type,
     eval_criteria: document.getElementById('new-eval-criteria').value,
-    val_cat: document.getElementById('new-val-cat').value,
+    val_cat: deriveValCat(document.querySelector('.type-card.selected').dataset.type),
     komisija: {
       tipas: (document.querySelector('input[name="new-kom-type"]:checked')||{value:'nuolatine'}).value,
       date: document.getElementById('new-kom-date').value,
@@ -1591,6 +1871,19 @@ function buildForm_Proto2(pk) {
         <div class="form-grid">
           <div class="fg"><label>Nauja termino data</label><input type="date" id="pf-new-term"></div>
           <div class="fg"><label>Pratęsimo priežastis</label><input type="text" id="pf-term-reason" placeholder="pvz.: atsakymai paveikia pasiūlymo parengimą"></div>
+        </div>
+        <div class="chk-row" style="margin-top:10px"><input type="checkbox" id="pf-bps193" onchange="document.getElementById('pf-bps193-row').style.display=this.checked?'block':'none'">
+          <label for="pf-bps193">Vėluojant pateikti atsakymą — BPS 19.3 p. (mažai dienų iki termino pabaigos)</label></div>
+        <div id="pf-bps193-row" style="display:none;margin-top:8px;padding:10px;background:var(--epso-cyan-5);border-radius:6px;border-left:3px solid var(--epso-cyan)">
+          <div class="form-grid">
+            <div class="fg"><label>Likę dienų iki termino pabaigos</label>
+              <select id="pf-bps193-days">
+                <option value="4">Mažiau nei 4 (keturios) dienos</option>
+                <option value="6">Mažiau nei 6 (šešios) dienos</option>
+              </select>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:6px">📌 Protokole bus pridėtas tekstas pagal BPS 19.3 punkto nuostatas.</div>
         </div>
       </div>
       <hr class="divider">
@@ -2323,19 +2616,40 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
     const maxEx=document.getElementById('pf-max-ex')?.value;
     const maxInc=document.getElementById('pf-max-inc')?.value;
 
+    // (3,5,6) Konfidencialūs priedai + skaidymas + CPO
+    const hasConfidential = pk.confidential_appendix || false;
+    const cpoApplicable = pk.cpo_applicable || false;
+    const notSplit = !pk.parts_enabled;
+
+    const svarstytaExtra = [];
+    if(hasConfidential){
+      svarstytaExtra.push(pr([b('\u2611 Atsi\u017evelgiant \u012f tai, kad dalis pirkimo dokument\u0173, \u012fskaitant technin\u0117s u\u017eduoties priedus, yra konfidenciali, si\u016bloma \u0161iuo protokolu patvirtinti sprendim\u0105 pirkimo proced\u016br\u0173 metu gavus pra\u0161ym\u0105 susipa\u017einti su konfidencialia informacija ir gavus tiek\u0117jo (-\u0173) konfidencialumo \u012fsipareigojimus konfidenciali\u0105 informacij\u0105 CVP IS priemon\u0117mis pateikti be atskiro protokolo (-\u0173).')]));
+    }
+    if(notSplit){
+      svarstytaExtra.push(pr([n('Pirkimo objektas neskaidomas \u012f dalis. Pagrindimas d\u0117l neskaidymo pridedamas prie protokolo (jei reikalingas).')]));
+    }
+    if(cpoApplicable){
+      svarstytaExtra.push(pr([n('Pirkimo objektas atitinka CPO katalog\u0105, ta\u010diau pirkimas vykdomas ne per CPO. Pagrindimas d\u0117l nepirkimo per CPO pridedamas prie protokolo prieduose.')]));
+    }
+
     rows.push(new TableRow({children:[cl([pr([b('Pirkimo dokument\u0173 svarstymas ir tvirtinimas.')])],{w:CW})]}));
     rows.push(hdr1('1. SVARSTYTA'));
     rows.push(new TableRow({children:[cl([
       pr([b('Vadovaujantis Pirkim\u0173 \u012fstatymo nuostatomis parengtas ir Komisijos nariams pateiktas Pirkimo dokument\u0173 projektas. Pirkimo dokumentuose nurodyta Pirkimui atlikti reikalinga informacija, apib\u016bdinanti perkam\u0105 objekt\u0105 ir nustatanti Pirkimo s\u0105lygas bei proced\u016bras. Si\u016bloma patvirtinti Pirkimo dokument\u0173 projekt\u0105 (\u0161io protokolo priedas).')]),
       ...(maxKaina&&maxEx?[pr([b(`\u2611 Komisija, tiek\u0117jo pasi\u016blymo kainai vir\u0161ijus ${maxEx} Eur be PVM (${maxInc||'___'} Eur su PVM), tiek\u0117jo pasi\u016blymo kain\u0105 laikys vir\u0161ijusi\u0105 pirkimui skirtas l\u0117\u0161as.`)])]:[]),
+      ...svarstytaExtra
     ],{w:CW})]}));
     rows.push(hdr1('2. SPRENDIMAS (-AI)'));
-    rows.push(new TableRow({children:[cl([
-      pr([b(`1. Vykdyti Pirkim\u0105 ${pk.type.startsWith('atviras')?'atviro konkurso':pk.type.startsWith('derybos')?'skelbiam\u0173 deryb\u0173':'neskelbiam\u0173 deryb\u0173'} b\u016bdu, ekonomi\u0161kai naudingiausią pasiūlymą išrenkant pagal: ${chk(vk==='kainą')} kainą / ${chk(vk==='kainos ir kokyb\u0117s santyk\u012f')} kainos ir kokyb\u0117s santyk\u012f / ${chk(vk==='sąnaudas')} s\u0105naudas / ${chk(vk==='sąnaud\u0173 ir kokyb\u0117s santyk\u012f')} s\u0105naud\u0173 ir kokyb\u0117s santyk\u012f.`)]),
+    const sprDecisions = [
+      pr([b(`1. Vykdyti Pirkim\u0105 ${pk.type.startsWith('atviras')?'atviro konkurso':pk.type.startsWith('derybos')?'skelbiam\u0173 deryb\u0173':(pk.type.startsWith('neskelbiamos')?'neskelbiam\u0173 deryb\u0173':(pk.type==='dps_steigimas'?'dinamin\u0117s pirkimo sistemos steigimo':(pk.type==='dps_konkretus'?'konkretaus pirkimo pagal DPS':'pirkimo')))} b\u016bdu, ekonomi\u0161kai naudingiausią pasiūlymą išrenkant pagal: ${chk(vk==='kainą')} kainą / ${chk(vk==='kainos ir kokyb\u0117s santyk\u012f')} kainos ir kokyb\u0117s santyk\u012f / ${chk(vk==='sąnaudas')} s\u0105naudas / ${chk(vk==='sąnaud\u0173 ir kokyb\u0117s santyk\u012f')} s\u0105naud\u0173 ir kokyb\u0117s santyk\u012f.`)]),
       pr([b('2. Patvirtinti Pirkimo dokumentus (\u0161io protokolo 1 priedas).')]),
       pr([b(`3. Nustatyti ne trumpesn\u012f kaip ${termDays} ${termType} termin\u0105 pasi\u016blym\u0173 pateikimui.`)]),
       pr([b('4. Paskelbti apie Pirkim\u0105 \u012fstatym\u0173 nustatyta tvarka.')]),
-    ],{w:CW})]}));
+    ];
+    if(hasConfidential){
+      sprDecisions.push(pr([b(`${sprDecisions.length+1}. Pritarti, kad pirkimo proced\u016br\u0173 metu gavus pra\u0161ym\u0105 susipa\u017einti su konfidencialia informacija ir tiek\u0117jo konfidencialumo \u012fsipareigojimus, konfidenciali informacija CVP IS priemon\u0117mis bus pateikta be atskiro protokolo.`)]));
+    }
+    rows.push(new TableRow({children:[cl(sprDecisions,{w:CW})]}));
     rows.push(hdr1('3. PRIEDAS (-AI)'));
     rows.push(new TableRow({children:[cl(priedai.length?priedai.map(p=>pr([n(`${chk(p.v)} ${p.n} priedas.${p.txt?' '+p.txt+'.':''}`)])):[pr([n('\u2611 1 priedas. Pirkimo dokumentai.')])],{w:CW})]}));
   }
@@ -2358,11 +2672,26 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
         ep()
       ]),
     ],{w:CW})]}));
+    // BPS 19.3 — vėluojant pateikti atsakymą
+    const bps193 = document.getElementById('pf-bps193')?.checked;
+    const bps193Days = document.getElementById('pf-bps193-days')?.value || '4';
+    if(bps193){
+      rows.push(new TableRow({children:[cl([
+        pr([n(`Pos\u0117d\u017eio sekretorius informavo, kad nuo \u0161io (-i\u0173) atsakymo (-\u0173) iki pasi\u016blym\u0173 / parai\u0161k\u0173 pateikimo termino pabaigos lieka ma\u017eiau nei ${bps193Days} (${bps193Days==='4'?'keturios':'\u0161e\u0161ios'}) dienos, tod\u0117l, vadovaujantis Bendr\u0173j\u0173 Pirkimo s\u0105lyg\u0173 19.3 punkto nuostatomis, b\u016btina prat\u0119sti pasi\u016blym\u0173 / parai\u0161k\u0173 pateikimo termin\u0105.`)])
+      ],{w:CW})]}));
+    }
     rows.push(hdr1('2. SPRENDIMAS (-AI)'));
-    rows.push(new TableRow({children:[cl([
-      pr([b('1. Patvirtinti pateiktus atsakymus ir per 1 darbo dien\u0105 persi\u0173sti tiek\u0117jams.')]),
-      ...(document.getElementById('pf-terminas-pratesas')?.checked?[pr([b(`2. Prat\u0119sti pasi\u016blym\u0173 pateikimo termin\u0105 iki ${document.getElementById('pf-new-term')?.value||'___'}.`)])]:[]),
-    ],{w:CW})]}));
+    const a2dec = [pr([b('1. Patvirtinti pateiktus atsakymus ir per 1 darbo dien\u0105 persi\u0173sti tiek\u0117jams.')])];
+    if(document.getElementById('pf-terminas-pratesas')?.checked){
+      const newTerm = document.getElementById('pf-new-term')?.value || '___';
+      const reason = document.getElementById('pf-term-reason')?.value || '';
+      let dec = `${a2dec.length+1}. Prat\u0119sti pasi\u016blym\u0173 pateikimo termin\u0105 iki ${newTerm}`;
+      if(bps193) dec += `, vadovaujantis Bendr\u0173j\u0173 Pirkimo s\u0105lyg\u0173 19.3 p.`;
+      if(reason) dec += ` (prie\u017eastis: ${reason})`;
+      dec += '.';
+      a2dec.push(pr([b(dec)]));
+    }
+    rows.push(new TableRow({children:[cl(a2dec,{w:CW})]}));
     rows.push(hdr1('3. PRIEDAS (-AI)'));
     rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas. Klausimai ir pra\u0161ymai.')]),pr([n('\u2611 2 priedas. Atsakymai.')])],{w:CW})]}));
   }
@@ -4224,6 +4553,92 @@ function openGlobalAudit(){
   document.getElementById('global-audit-modal').classList.add('show');
 }
 function closeGlobalAudit(){ document.getElementById('global-audit-modal').classList.remove('show'); }
+
+// ════════════════════════════════════════════════════════
+// PIRKIMO KOPIJAVIMAS Iš ŠABLONO
+// ════════════════════════════════════════════════════════
+let _copySourceId = null;
+
+function openCopyModal(){
+  const store = getProcurements();
+  const pks = Object.values(store).filter(pk => !pk.archived);
+  if(pks.length === 0){ toast('Nėra esamų pirkimų kopijavimui','error'); return; }
+
+  _copySourceId = null;
+  document.getElementById('copy-new-id').value = '';
+  document.getElementById('copy-new-name').value = '';
+  document.getElementById('copy-confirm-btn').disabled = true;
+
+  // Auto-generuojam ID pasiūlymą
+  const today = new Date();
+  const yr = String(today.getFullYear()).slice(2);
+  const existingCount = Object.keys(store).filter(id => id.startsWith(yr + '-PK')).length + 1;
+  document.getElementById('copy-new-id').value = `${yr}-PK${String(existingCount).padStart(2,'0')}`;
+
+  // Render šaltinio sąrašas
+  const list = document.getElementById('copy-source-list');
+  list.innerHTML = pks.map(pk => `<div class="copy-source-item" data-pk-id="${pk.id}" onclick="selectCopySource('${pk.id}')" style="padding:12px 16px;border-bottom:1px solid var(--epso-graphite-15);cursor:pointer;transition:background 180ms">
+    <div style="font-weight:700;font-size:14px;color:var(--epso-graphite)">${pk.id} — ${pk.name||'(be pavadinimo)'}</div>
+    <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:2px">${typeLabel(pk.type)} · ${formatMoney(pk.val_ex||0)} EUR · ${pk.korteles_data||''}</div>
+  </div>`).join('');
+
+  document.getElementById('copy-pk-modal').classList.add('show');
+  logAudit('OPEN_COPY_MODAL', null);
+}
+
+function closeCopyModal(){
+  document.getElementById('copy-pk-modal').classList.remove('show');
+  _copySourceId = null;
+}
+
+function selectCopySource(pkId){
+  _copySourceId = pkId;
+  document.querySelectorAll('.copy-source-item').forEach(el => {
+    el.style.background = el.dataset.pkId === pkId ? 'var(--epso-green-15)' : '';
+    el.style.borderLeft = el.dataset.pkId === pkId ? '3px solid var(--epso-emerald)' : '';
+  });
+  const newId = document.getElementById('copy-new-id').value.trim();
+  document.getElementById('copy-confirm-btn').disabled = !newId;
+}
+
+document.addEventListener('input', e => {
+  if(e.target.id === 'copy-new-id'){
+    document.getElementById('copy-confirm-btn').disabled = !_copySourceId || !e.target.value.trim();
+  }
+});
+
+function confirmCopy(){
+  if(!_copySourceId){ toast('Pasirinkite šaltinio pirkimą','error'); return; }
+  const newId = document.getElementById('copy-new-id').value.trim();
+  if(!newId){ toast('Įveskite naujo pirkimo Nr.','error'); return; }
+  const store = getProcurements();
+  if(store[newId]){ toast(`Pirkimas ${newId} jau egzistuoja`,'error'); return; }
+
+  const source = store[_copySourceId];
+  if(!source) return;
+
+  const customName = document.getElementById('copy-new-name').value.trim();
+  const newPk = JSON.parse(JSON.stringify(source)); // deep clone
+  // Resetuojam laukus, kurie turi būti unikalūs
+  newPk.id = newId;
+  newPk.name = customName || (source.name + ' (kopija)');
+  newPk.korteles_data = new Date().toISOString().split('T')[0];
+  newPk.createdAt = new Date().toISOString();
+  newPk.protocols = {}; // švarūs protokolai
+  newPk.archived = false;
+  newPk.archivedAt = null;
+  newPk.cvp_nr = ''; // naujas CVP IS numeris reikalingas
+  newPk.copiedFrom = _copySourceId;
+
+  store[newId] = newPk;
+  saveStore(store);
+  logAudit('COPY_PROCUREMENT', newId, {from: _copySourceId, name: newPk.name});
+  toast(`✅ Pirkimas ${newId} sukurtas pagal ${_copySourceId}`,'success');
+  closeCopyModal();
+  currentPkId = newId;
+  showPage('page-detail');
+  renderDetail(newId);
+}
 
 function openRiskPanel(){
   if(!currentPkId){ toast('Pirma pasirinkite pirkimą','error'); return; }
