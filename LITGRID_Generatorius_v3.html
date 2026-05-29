@@ -305,6 +305,8 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 .vote-table td:first-child { text-align: left; font-weight: 600; }
 
 </style>
+<!-- SheetJS (xlsx) biblioteka Excel eksportui -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -316,8 +318,15 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
   <div class="breadcrumb" id="breadcrumb"></div>
   <div style="display:flex;gap:8px;margin-left:16px">
     <div id="save-state-badge" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;font-size:12px;font-weight:600;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);transition:all 250ms ease" title="Pakeitimų saugojimo būsena"><span id="save-state-dot" style="width:8px;height:8px;border-radius:50%;background:#22C55E"></span><span id="save-state-text">✓ Išsaugota</span></div>
-    <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="exportData()" title="Eksportuoti duomenis">⬇ Eksportas</button>
-    <label class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);cursor:pointer" title="Importuoti duomenis">⬆ Importas<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="exportToExcel()" title="Eksportuoti pirkimų suvestinę į Excel failą (.xlsx)">📊 Excel</button>
+    <div style="position:relative;display:inline-block">
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="toggleBackupMenu(event)" title="Atsarginės kopijos veiksmai">💾 Kopija ▾</button>
+      <div id="backup-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--epso-graphite-15);border-radius:8px;box-shadow:0 8px 24px rgba(46,54,65,.15);min-width:220px;z-index:200">
+        <div style="padding:8px 14px;font-size:11px;color:var(--epso-graphite-50);font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--epso-graphite-15)">Atsarginė kopija</div>
+        <button class="backup-menu-item" onclick="exportData();closeBackupMenu()" style="display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;cursor:pointer;font-family:Nunito Sans;font-size:13px;color:var(--epso-graphite);border-bottom:1px solid var(--epso-graphite-15)">💾 Sukurti JSON kopiją<div style="font-size:11px;color:var(--epso-graphite-50);margin-top:2px">Pilna naršyklės saugyklos atsarginė kopija</div></button>
+        <label class="backup-menu-item" style="display:block;width:100%;text-align:left;padding:10px 14px;cursor:pointer;font-family:Nunito Sans;font-size:13px;color:var(--epso-graphite)">📂 Atkurti iš kopijos<div style="font-size:11px;color:var(--epso-graphite-50);margin-top:2px">Importuoti anksčiau išsaugotą JSON failą</div><input type="file" accept=".json" style="display:none" onchange="importData(event);closeBackupMenu()"></label>
+      </div>
+    </div>
     <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="openGlobalAudit()" title="Globalus audito žurnalas (PSĮ 103 str.)">📊 Auditas</button>
     <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="openHelp()" title="Pagalba ir VPT gairės">❓ Pagalba</button>
   </div>
@@ -817,6 +826,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
       <h3 style="margin-bottom:8px;color:var(--epso-emerald)">Klaviatūros sutrumpinimai</h3>
       <ul style="margin-left:24px">
         <li><kbd>Esc</kbd> — uždaryti modalo langą</li>
+        <li><kbd>Ctrl</kbd> + <kbd>K</kbd> — greita paieška pirkimų sąraše</li>
       </ul>
     </div>
     <div class="epso-modal__footer">
@@ -1406,7 +1416,7 @@ function rerenderPkList(){
       <div class="pk-badge">${pk.id}</div>
       <div class="pk-info">
         <h3>${archivedBadge}${pk.name || '—'}</h3>
-        <div class="meta">${statusBadge}${riskBadge} <span class="badge ${typeColors[pk.type]||'badge-gray'}" style="margin-left:6px">${typeLabel(pk.type)}</span> &nbsp;${pk.korteles_data||''} &nbsp;·&nbsp; ${formatMoney(pk.val_ex||0)} EUR</div>
+        <div class="meta">${statusBadge}${riskBadge} <span class="badge ${typeColors[pk.type]||'badge-gray'}" style="margin-left:6px">${typeLabel(pk.type)}</span> &nbsp;${pk.korteles_data||''} &nbsp;·&nbsp; ${formatMoney(pk.val_ex||0)} EUR${pk.lastAccessedAt ? ` &nbsp;·&nbsp; <span style="color:var(--epso-graphite-50);font-style:italic">👁 ${fmtRelativeTime(pk.lastAccessedAt)}</span>` : ''}</div>
       </div>
       <div class="pk-progress">
         <div class="pct">${done}/${seq.length}</div>
@@ -1420,7 +1430,48 @@ function rerenderPkList(){
 
 function openProcurement(id) {
   currentPkId = id;
+  // Įrašom paskutinio atvėrimo laiką (BONUS funkcija)
+  const pk = getProcurement(id);
+  if(pk){
+    pk.lastAccessedAt = new Date().toISOString();
+    saveProcurementData(id, pk);
+  }
   showPage('page-detail');
+}
+
+// Ctrl+K / Cmd+K — fokusuoti paieškos lauką dashboard'e
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key === 'k'){
+    e.preventDefault();
+    const search = document.getElementById('dash-search');
+    if(search){
+      // Jei ne dashboard puslapyje — pereiti į jį
+      if(!document.getElementById('page-dashboard')?.classList.contains('active')){
+        showPage('page-dashboard');
+        setTimeout(() => { document.getElementById('dash-search')?.focus(); }, 100);
+      } else {
+        search.focus();
+        search.select();
+      }
+    }
+  }
+});
+
+// Helper: relatyvus laiko formatas („prieš 2 val.", „vakar", „2026-05-15")
+function fmtRelativeTime(iso){
+  if(!iso) return '';
+  const now = new Date();
+  const then = new Date(iso);
+  const diffMs = now - then;
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMs / 3600000);
+  const diffDay = Math.floor(diffMs / 86400000);
+  if(diffMin < 1) return 'ką tik';
+  if(diffMin < 60) return `prieš ${diffMin} min.`;
+  if(diffHr < 24) return `prieš ${diffHr} val.`;
+  if(diffDay === 1) return 'vakar';
+  if(diffDay < 7) return `prieš ${diffDay} d.`;
+  return then.toISOString().split('T')[0];
 }
 
 // ════════════════════════════════════════════════════════
@@ -4604,6 +4655,193 @@ function selectCopySource(pkId){
 document.addEventListener('input', e => {
   if(e.target.id === 'copy-new-id'){
     document.getElementById('copy-confirm-btn').disabled = !_copySourceId || !e.target.value.trim();
+  }
+});
+
+// ════════════════════════════════════════════════════════
+// EXCEL EKSPORTAS (.xlsx) — pirkimų suvestinė
+// ════════════════════════════════════════════════════════
+function exportToExcel(){
+  if(typeof XLSX === 'undefined'){
+    toast('Excel biblioteka neįkelta. Patikrinkite interneto ryšį.','error');
+    return;
+  }
+  const store = getProcurements();
+  const pks = Object.values(store);
+  if(pks.length === 0){ toast('Nėra pirkimų eksportui','error'); return; }
+
+  setSaveState('saving');
+
+  try {
+    const wb = XLSX.utils.book_new();
+
+    // === 1 LAPAS: Pirkimų suvestinė ===
+    const summary = [
+      ['LITGRID AB — PIRKIMŲ SUVESTINĖ'],
+      [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
+      [],
+      ['Pirkimo Nr.', 'Pavadinimas', 'Pirkimo būdas', 'Vertė be PVM (EUR)', 'Vertė su PVM (EUR)', 'Objekto tipas', 'Sutarties trukmė', 'Pirkimo kortelės data', 'CVP IS Nr.', 'Statusas', 'Pažanga (protokolų)', 'Komisijos pirmininkas', 'Komisijos sekretorius', 'Komisijos tipas', 'Rizikos lygis', 'Archyvuotas', 'Sukurta', 'Paskutinį kartą atvertas']
+    ];
+
+    pks.forEach(pk => {
+      const seq = getSequence(pk.type);
+      const done = Object.values(pk.protocols || {}).filter(p => p.done).length;
+      const pct = seq.length > 0 ? Math.round(done / seq.length * 100) : 0;
+      let status = 'Nepradėtas';
+      if(done >= seq.length) status = 'Užbaigtas';
+      else if(done > 0) status = `Vykdomas (${pct}%)`;
+      let risk = 'Žema';
+      try { risk = calcRiskLevel(pk).label; } catch(e){}
+      const objTypeMap = {prekes:'Prekės', paslaugos:'Paslaugos', darbai:'Darbai'};
+      summary.push([
+        pk.id,
+        pk.name || '',
+        typeLabel(pk.type) || pk.type || '',
+        parseFloat(pk.val_ex) || 0,
+        parseFloat(pk.val_inc) || 0,
+        objTypeMap[pk.obj_type] || pk.obj_type || '',
+        pk.terminas || '',
+        pk.korteles_data || '',
+        pk.cvp_nr || '',
+        status,
+        `${done} / ${seq.length}`,
+        pk.komisija?.chair || '',
+        pk.komisija?.secretary || '',
+        pk.komisija?.tipas === 'ad_hoc' ? 'Ad hoc' : 'Nuolatinė',
+        risk,
+        pk.archived ? 'Taip' : 'Ne',
+        pk.createdAt || '',
+        pk.lastAccessedAt ? new Date(pk.lastAccessedAt).toLocaleString('lt-LT') : ''
+      ]);
+    });
+
+    const ws1 = XLSX.utils.aoa_to_sheet(summary);
+    // Stulpelių pločiai
+    ws1['!cols'] = [
+      {wch:12}, {wch:40}, {wch:30}, {wch:18}, {wch:18}, {wch:12}, {wch:18},
+      {wch:18}, {wch:18}, {wch:20}, {wch:16}, {wch:24}, {wch:24}, {wch:14},
+      {wch:12}, {wch:12}, {wch:20}, {wch:20}
+    ];
+    // Suliejimas antraštės
+    ws1['!merges'] = [
+      {s:{r:0,c:0}, e:{r:0,c:17}},
+      {s:{r:1,c:0}, e:{r:1,c:17}}
+    ];
+    XLSX.utils.book_append_sheet(wb, ws1, 'Pirkimų suvestinė');
+
+    // === 2 LAPAS: Protokolų statusas ===
+    const protoData = [
+      ['LITGRID AB — PROTOKOLŲ STATUSO SUVESTINĖ'],
+      [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
+      [],
+      ['Pirkimo Nr.', 'Pirkimo pavadinimas', 'Protokolo Nr.', 'Protokolo pavadinimas', 'Statusas', 'Sugeneruota']
+    ];
+    pks.forEach(pk => {
+      const seq = getSequence(pk.type);
+      seq.forEach(proto => {
+        const pState = (pk.protocols || {})[proto.id] || {};
+        protoData.push([
+          pk.id,
+          pk.name || '',
+          proto.num,
+          proto.name,
+          pState.done ? '✓ Sugeneruota' : 'Laukia',
+          pState.date || ''
+        ]);
+      });
+    });
+    const ws2 = XLSX.utils.aoa_to_sheet(protoData);
+    ws2['!cols'] = [{wch:12}, {wch:40}, {wch:14}, {wch:42}, {wch:18}, {wch:18}];
+    ws2['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:5}}, {s:{r:1,c:0}, e:{r:1,c:5}}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Protokolų statusas');
+
+    // === 3 LAPAS: Komisijų suvestinė ===
+    const komData = [
+      ['LITGRID AB — KOMISIJŲ SUVESTINĖ'],
+      [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
+      [],
+      ['Pirkimo Nr.', 'Pirkimo pavadinimas', 'Komisijos tipas', 'Įsakymo data', 'Įsakymo Nr.', 'Pirmininkas', 'Sekretorius', 'Nariai', 'Narių iš viso', 'Nešališkumas patvirtintas']
+    ];
+    pks.forEach(pk => {
+      const k = pk.komisija || {};
+      const total = (k.chair?1:0) + (k.secretary?1:0) + (k.members?k.members.length:0);
+      komData.push([
+        pk.id,
+        pk.name || '',
+        k.tipas === 'ad_hoc' ? 'Ad hoc' : 'Nuolatinė',
+        k.date || '',
+        k.nr || '',
+        k.chair || '',
+        k.secretary || '',
+        (k.members || []).join('; '),
+        total,
+        k.nesaliskumas ? '✓ Taip' : '✗ Ne'
+      ]);
+    });
+    const ws3 = XLSX.utils.aoa_to_sheet(komData);
+    ws3['!cols'] = [{wch:12}, {wch:40}, {wch:14}, {wch:14}, {wch:14}, {wch:24}, {wch:24}, {wch:36}, {wch:14}, {wch:22}];
+    ws3['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:9}}, {s:{r:1,c:0}, e:{r:1,c:9}}];
+    XLSX.utils.book_append_sheet(wb, ws3, 'Komisijos');
+
+    // === 4 LAPAS: Bendra statistika ===
+    const total = pks.length;
+    const active = pks.filter(p => !p.archived).length;
+    const archived = total - active;
+    const doneCount = pks.filter(p => {
+      const seq = getSequence(p.type);
+      const d = Object.values(p.protocols || {}).filter(x => x.done).length;
+      return d >= seq.length && !p.archived;
+    }).length;
+    const totalValue = pks.filter(p => !p.archived).reduce((s,p) => s + (parseFloat(p.val_ex)||0), 0);
+    const statsData = [
+      ['LITGRID AB — PIRKIMŲ STATISTIKA'],
+      [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
+      [],
+      ['Rodiklis', 'Reikšmė'],
+      ['Viso pirkimų', total],
+      ['Aktyvūs', active],
+      ['Archyvuoti', archived],
+      ['Užbaigti', doneCount],
+      ['Bendra aktyvių pirkimų vertė (EUR be PVM)', totalValue.toFixed(2)],
+      ['Pirkimų pagal tipą:', ''],
+    ];
+    const byType = {};
+    pks.filter(p => !p.archived).forEach(p => { byType[p.type] = (byType[p.type]||0) + 1; });
+    Object.entries(byType).forEach(([t, c]) => statsData.push(['  ' + (typeLabel(t)||t), c]));
+    const ws4 = XLSX.utils.aoa_to_sheet(statsData);
+    ws4['!cols'] = [{wch:48}, {wch:24}];
+    ws4['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:1}}, {s:{r:1,c:0}, e:{r:1,c:1}}];
+    XLSX.utils.book_append_sheet(wb, ws4, 'Statistika');
+
+    // Eksportuoti
+    const filename = `LITGRID_Pirkimai_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    setSaveState('saved');
+    logAudit('EXPORT_EXCEL', null, {filename, count: pks.length});
+    toast(`📊 Eksportuota ${pks.length} pirkimų į ${filename}`,'success');
+  } catch(e){
+    console.error(e);
+    setSaveState('error');
+    toast('Klaida eksportuojant: ' + e.message,'error');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// BACKUP DROPDOWN MENU
+// ════════════════════════════════════════════════════════
+function toggleBackupMenu(e){
+  e.stopPropagation();
+  const m = document.getElementById('backup-menu');
+  if(!m) return;
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function closeBackupMenu(){
+  const m = document.getElementById('backup-menu');
+  if(m) m.style.display = 'none';
+}
+document.addEventListener('click', e => {
+  if(!e.target.closest('#backup-menu') && !e.target.closest('[onclick*="toggleBackupMenu"]')){
+    closeBackupMenu();
   }
 });
 
