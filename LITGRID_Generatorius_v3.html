@@ -321,10 +321,13 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
     <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="exportToExcel()" title="Eksportuoti pirkimų suvestinę į Excel failą (.xlsx)">📊 Excel</button>
     <div style="position:relative;display:inline-block">
       <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="toggleBackupMenu(event)" title="Atsarginės kopijos veiksmai">💾 Kopija ▾</button>
-      <div id="backup-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--epso-graphite-15);border-radius:8px;box-shadow:0 8px 24px rgba(46,54,65,.15);min-width:220px;z-index:200">
-        <div style="padding:8px 14px;font-size:11px;color:var(--epso-graphite-50);font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--epso-graphite-15)">Atsarginė kopija</div>
+      <div id="backup-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--epso-graphite-15);border-radius:8px;box-shadow:0 8px 24px rgba(46,54,65,.15);min-width:280px;z-index:200">
+        <div style="padding:8px 14px;font-size:11px;color:var(--epso-graphite-50);font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--epso-graphite-15)">Atsarginė kopija (JSON)</div>
         <button class="backup-menu-item" onclick="exportData();closeBackupMenu()" style="display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;cursor:pointer;font-family:Nunito Sans;font-size:13px;color:var(--epso-graphite);border-bottom:1px solid var(--epso-graphite-15)">💾 Sukurti JSON kopiją<div style="font-size:11px;color:var(--epso-graphite-50);margin-top:2px">Pilna naršyklės saugyklos atsarginė kopija</div></button>
-        <label class="backup-menu-item" style="display:block;width:100%;text-align:left;padding:10px 14px;cursor:pointer;font-family:Nunito Sans;font-size:13px;color:var(--epso-graphite)">📂 Atkurti iš kopijos<div style="font-size:11px;color:var(--epso-graphite-50);margin-top:2px">Importuoti anksčiau išsaugotą JSON failą</div><input type="file" accept=".json" style="display:none" onchange="importData(event);closeBackupMenu()"></label>
+        <label class="backup-menu-item" style="display:block;width:100%;text-align:left;padding:10px 14px;cursor:pointer;font-family:Nunito Sans;font-size:13px;color:var(--epso-graphite);border-bottom:1px solid var(--epso-graphite-15)">📂 Atkurti iš kopijos<div style="font-size:11px;color:var(--epso-graphite-50);margin-top:2px">Importuoti anksčiau išsaugotą JSON failą</div><input type="file" accept=".json" style="display:none" onchange="importData(event);closeBackupMenu()"></label>
+        <div style="padding:8px 14px;font-size:11px;color:var(--epso-graphite-50);font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--epso-graphite-15);border-top:2px solid var(--epso-emerald)">Masinis Excel importas</div>
+        <button class="backup-menu-item" onclick="downloadImportTemplate();closeBackupMenu()" style="display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;cursor:pointer;font-family:Nunito Sans;font-size:13px;color:var(--epso-graphite);border-bottom:1px solid var(--epso-graphite-15)">📄 Atsisiųsti Excel šabloną<div style="font-size:11px;color:var(--epso-graphite-50);margin-top:2px">Tuščia .xlsx forma su stulpeliais</div></button>
+        <label class="backup-menu-item" style="display:block;width:100%;text-align:left;padding:10px 14px;cursor:pointer;font-family:Nunito Sans;font-size:13px;color:var(--epso-graphite)">📥 Importuoti iš Excel<div style="font-size:11px;color:var(--epso-graphite-50);margin-top:2px">Masinis pirkimų sukūrimas iš .xlsx</div><input type="file" accept=".xlsx,.xls" style="display:none" onchange="importFromExcel(event);closeBackupMenu()"></label>
       </div>
     </div>
     <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="openGlobalAudit()" title="Globalus audito žurnalas (PSĮ 103 str.)">📊 Auditas</button>
@@ -403,6 +406,16 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
           <div class="fg">
             <label>Sutarties trukmė (mėn.)</label>
             <input type="number" id="new-pk-terminas" min="1" step="1" placeholder="pvz.: 24">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="fg">
+            <label>Prioritetas</label>
+            <select id="new-pk-priority">
+              <option value="normal" selected>⚪ Normalus</option>
+              <option value="urgent">🔴 Skubus</option>
+              <option value="low">🔵 Žemas</option>
+            </select>
           </div>
         </div>
         <div class="form-grid full">
@@ -617,6 +630,22 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
   </div>
   <div id="detail-header" style="margin-bottom:18px"></div>
   <div class="proto-list" id="proto-sequence"></div>
+
+  <!-- Komentarai / pastabos -->
+  <div class="card" style="margin-top:20px" id="comments-card">
+    <div class="card-header" onclick="toggleCard(this)" style="background:linear-gradient(135deg, var(--epso-cyan-5) 0%, #fff 100%);border-left:4px solid var(--epso-cyan)">
+      💬 Komentarai ir pastabos <span id="comments-count" style="color:var(--epso-graphite-50);font-weight:400;font-size:12px;margin-left:8px"></span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--epso-graphite-50);margin-bottom:12px">📝 Vidiniai pastabai ir komentarai pirkimo procesui. Visi įrašai išlieka audito sekoje (PSĮ 103 str.).</p>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <textarea id="new-comment" rows="2" placeholder="Įveskite pastabą... pvz., „Suderinta su teisininkais 06-15", „Prašymas išsiųstas, lauksime atsakymo"" style="flex:1;padding:10px 12px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans;font-size:14px;resize:vertical;min-height:60px"></textarea>
+        <button class="btn btn-primary" onclick="addComment()" style="align-self:flex-end">💬 Pridėti</button>
+      </div>
+      <div id="comments-list"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════ PAGE: PROTOCOL FORM ══════════════════════════ -->
@@ -1279,7 +1308,7 @@ function toast(msg, type='ok') {
 // ════════════════════════════════════════════════════════
 // DASHBOARD
 // ════════════════════════════════════════════════════════
-let dashFilter = { search: '', type: 'all', status: 'all', showArchived: false };
+let dashFilter = { search: '', type: 'all', status: 'all', showArchived: false, sort: 'lastAccessed', onlyMine: false, priority: 'all' };
 
 function renderDashboard() {
   const store = getProcurements();
@@ -1292,6 +1321,7 @@ function renderDashboard() {
   const activePks = pks.filter(pk => !pk.archived);
   stats.total = activePks.length;
   stats.archived = pks.length - activePks.length;
+  stats.urgent = 0;
   activePks.forEach(pk => {
     const seq = getSequence(pk.type);
     const doneCount = Object.values(pk.protocols || {}).filter(p => p.done).length;
@@ -1300,7 +1330,24 @@ function renderDashboard() {
     else stats.inProgress++;
     stats.totalValue += parseFloat(pk.val_ex) || 0;
     try { if(calcRiskLevel(pk).level === 'high') stats.highRisk++; } catch(e){}
+    if(pk.priority === 'urgent') stats.urgent++;
   });
+
+  // SKUBŪS PIRKIMAI widget (rodomas tik kai > 0)
+  const urgent_html = stats.urgent > 0 ? `
+  <div onclick="dashFilter.priority='urgent';rerenderPkList();document.querySelector('select[onchange*=\'dashFilter.priority\']').value='urgent'" style="background:linear-gradient(135deg, #DB354A 0%, #B82B3D 100%);color:#fff;padding:18px 22px;border-radius:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 4px 14px rgba(219,53,74,.25);transition:transform 200ms ease,box-shadow 200ms ease" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(219,53,74,.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(219,53,74,.25)'" title="Spauskite — filtruoti tik skubius pirkimus">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="font-size:34px;animation:pulse 1.6s ease-in-out infinite">🔴</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;opacity:.85">Reikia dėmesio</div>
+        <div style="font-size:22px;font-weight:800;margin-top:2px">${stats.urgent} skub${stats.urgent===1?'us pirkimas':(stats.urgent<10?'ūs pirkimai':'ių pirkimų')}</div>
+        <div style="font-size:12px;margin-top:4px;opacity:.85">Spauskite, kad parodyti tik skubius pirkimus</div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:600;background:rgba(255,255,255,.18);padding:8px 16px;border-radius:99px;border:1px solid rgba(255,255,255,.3)">Žiūrėti →</div>
+  </div>
+  <style>@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }</style>
+  ` : '';
 
   const stats_html = pks.length === 0 ? '' : `
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px">
@@ -1349,6 +1396,29 @@ function renderDashboard() {
     <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;background:#fff;font-size:14px;cursor:pointer">
       <input type="checkbox" ${dashFilter.showArchived?'checked':''} onchange="dashFilter.showArchived=this.checked;rerenderPkList()"> 📦 Archyvuoti
     </label>
+    <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;background:#fff;font-size:14px;cursor:pointer">
+      <input type="checkbox" ${dashFilter.onlyMine?'checked':''} onchange="dashFilter.onlyMine=this.checked;rerenderPkList()"> 👤 Mano pirkimai
+    </label>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+    <span style="font-size:12px;color:var(--epso-graphite-50);font-weight:600">Rūšiuoti:</span>
+    <select onchange="dashFilter.sort=this.value;rerenderPkList()" style="padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans;font-size:14px">
+      <option value="lastAccessed" ${dashFilter.sort==='lastAccessed'?'selected':''}>👁 Paskutinis atvertimas</option>
+      <option value="value_desc" ${dashFilter.sort==='value_desc'?'selected':''}>💶 Vertė (didžiausia)</option>
+      <option value="value_asc" ${dashFilter.sort==='value_asc'?'selected':''}>💶 Vertė (mažiausia)</option>
+      <option value="date_desc" ${dashFilter.sort==='date_desc'?'selected':''}>📅 Data (naujausi)</option>
+      <option value="date_asc" ${dashFilter.sort==='date_asc'?'selected':''}>📅 Data (seniausi)</option>
+      <option value="name_asc" ${dashFilter.sort==='name_asc'?'selected':''}>🔤 Pavadinimas (A–Z)</option>
+      <option value="name_desc" ${dashFilter.sort==='name_desc'?'selected':''}>🔤 Pavadinimas (Z–A)</option>
+      <option value="priority" ${dashFilter.sort==='priority'?'selected':''}>⚡ Prioritetas</option>
+    </select>
+    <span style="font-size:12px;color:var(--epso-graphite-50);font-weight:600;margin-left:8px">Prioritetas:</span>
+    <select onchange="dashFilter.priority=this.value;rerenderPkList()" style="padding:8px 14px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans;font-size:14px">
+      <option value="all" ${dashFilter.priority==='all'?'selected':''}>Visi</option>
+      <option value="urgent" ${dashFilter.priority==='urgent'?'selected':''}>🔴 Skubūs</option>
+      <option value="normal" ${dashFilter.priority==='normal'?'selected':''}>⚪ Normalūs</option>
+      <option value="low" ${dashFilter.priority==='low'?'selected':''}>🔵 Žema</option>
+    </select>
   </div>`;
 
   if (pks.length === 0) {
@@ -1356,7 +1426,7 @@ function renderDashboard() {
     return;
   }
 
-  list.innerHTML = stats_html + filter_html + '<div id="pk-list-inner"></div>';
+  list.innerHTML = urgent_html + stats_html + filter_html + '<div id="pk-list-inner"></div>';
   rerenderPkList();
 }
 
@@ -1367,6 +1437,23 @@ function rerenderPkList(){
   // Pagal default'inį filtrą archyvuoti pirkimai paslepti (nebent vartotojas pasirinko)
   if(!dashFilter.showArchived){
     pks = pks.filter(pk => !pk.archived);
+  }
+
+  // FILTRAS: tik mano pirkimai (komisijos narys)
+  if(dashFilter.onlyMine){
+    const myName = 'Arūnas Jurgelaitis';
+    pks = pks.filter(pk => {
+      const k = pk.komisija || {};
+      if(k.chair && k.chair.includes('Arūnas')) return true;
+      if(k.secretary && k.secretary.includes('Arūnas')) return true;
+      if(Array.isArray(k.members) && k.members.some(m => m && m.includes('Arūnas'))) return true;
+      return false;
+    });
+  }
+
+  // FILTRAS: prioritetas
+  if(dashFilter.priority !== 'all'){
+    pks = pks.filter(pk => (pk.priority || 'normal') === dashFilter.priority);
   }
 
   if(dashFilter.search){
@@ -1385,6 +1472,19 @@ function rerenderPkList(){
       return done > 0 && done < seq.length;
     });
   }
+
+  // RŪŠIAVIMAS
+  const sortMap = {
+    lastAccessed: (a,b) => (b.lastAccessedAt || b.createdAt || '').localeCompare(a.lastAccessedAt || a.createdAt || ''),
+    value_desc: (a,b) => (parseFloat(b.val_ex)||0) - (parseFloat(a.val_ex)||0),
+    value_asc: (a,b) => (parseFloat(a.val_ex)||0) - (parseFloat(b.val_ex)||0),
+    date_desc: (a,b) => (b.korteles_data || '').localeCompare(a.korteles_data || ''),
+    date_asc: (a,b) => (a.korteles_data || '').localeCompare(b.korteles_data || ''),
+    name_asc: (a,b) => (a.name || '').localeCompare(b.name || '', 'lt'),
+    name_desc: (a,b) => (b.name || '').localeCompare(a.name || '', 'lt'),
+    priority: (a,b) => { const pr = {urgent:0,normal:1,low:2}; return (pr[a.priority||'normal'] - pr[b.priority||'normal']); }
+  };
+  if(sortMap[dashFilter.sort]) pks.sort(sortMap[dashFilter.sort]);
 
   const inner = document.getElementById('pk-list-inner');
   if(!inner) return;
@@ -1412,10 +1512,15 @@ function rerenderPkList(){
 
     const archivedStyle = pk.archived ? 'opacity:.5;background:repeating-linear-gradient(45deg,#fafafa,#fafafa 8px,#fff 8px,#fff 16px)' : '';
     const archivedBadge = pk.archived ? '<span style="font-size:10px;background:var(--epso-graphite);color:#fff;padding:1px 8px;border-radius:99px;font-weight:700;margin-right:6px">📦 ARCH.</span>' : '';
-    return `<div class="pk-card" onclick="openProcurement('${pk.id}')" style="${archivedStyle}">
+    // Prioriteto spalvinis žymėjimas (kairioji kraštinė)
+    const priorityColors = {urgent:'#DB354A', low:'#00A5C4', normal:''};
+    const priority = pk.priority || 'normal';
+    const priorityBorder = priorityColors[priority] ? `border-left:4px solid ${priorityColors[priority]};` : '';
+    const priorityBadge = priority==='urgent' ? '<span style="font-size:10px;background:#DB354A;color:#fff;padding:1px 8px;border-radius:99px;font-weight:700;margin-right:6px">🔴 SKUBUS</span>' : (priority==='low' ? '<span style="font-size:10px;background:#00A5C4;color:#fff;padding:1px 8px;border-radius:99px;font-weight:700;margin-right:6px">🔵 ŽEMAS</span>' : '');
+    return `<div class="pk-card" onclick="openProcurement('${pk.id}')" style="${priorityBorder}${archivedStyle}">
       <div class="pk-badge">${pk.id}</div>
       <div class="pk-info">
-        <h3>${archivedBadge}${pk.name || '—'}</h3>
+        <h3>${priorityBadge}${archivedBadge}${pk.name || '—'}</h3>
         <div class="meta">${statusBadge}${riskBadge} <span class="badge ${typeColors[pk.type]||'badge-gray'}" style="margin-left:6px">${typeLabel(pk.type)}</span> &nbsp;${pk.korteles_data||''} &nbsp;·&nbsp; ${formatMoney(pk.val_ex||0)} EUR${pk.lastAccessedAt ? ` &nbsp;·&nbsp; <span style="color:var(--epso-graphite-50);font-style:italic">👁 ${fmtRelativeTime(pk.lastAccessedAt)}</span>` : ''}</div>
       </div>
       <div class="pk-progress">
@@ -1494,8 +1599,10 @@ function renderDetail(id) {
     if(btn) btn.title = pk.archived ? 'Atstatyti pirkimą į aktyvius' : 'Archyvuoti pirkimą (saugoma istorijoje)';
   }, 50);
   const _archivedBadge = pk.archived ? `<div style="background:rgba(115,116,131,.15);color:var(--epso-graphite);padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;margin-bottom:10px;display:inline-block">📦 ARCHYVUOTA${pk.archivedAt?' · '+new Date(pk.archivedAt).toLocaleDateString('lt-LT'):''}</div>` : '';
+  // Komentarų rendering
+  setTimeout(() => renderComments(), 100);
   document.getElementById('detail-header').innerHTML = `
-    <div style="background:linear-gradient(135deg, #fff 0%, var(--epso-green-5) 100%);border:1px solid var(--epso-graphite-15);border-radius:12px;padding:18px 22px;box-shadow:0 1px 3px rgba(46,54,65,.04)">
+    <div style="background:linear-gradient(135deg, #fff 0%, var(--epso-green-5) 100%);border:1px solid var(--epso-graphite-15);border-radius:12px;padding:18px 22px;box-shadow:0 1px 3px rgba(46,54,65,.04);${pk.priority==='urgent'?'border-left:4px solid #DB354A;':''}${pk.priority==='low'?'border-left:4px solid #00A5C4;':''}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap">
         <div style="flex:1;min-width:280px">
           ${_archivedBadge}<div style="font-size:11px;font-weight:700;color:var(--epso-emerald);letter-spacing:.4px;text-transform:uppercase">${pk.id}</div>
@@ -1505,6 +1612,13 @@ function renderDetail(id) {
             <span>💶 ${formatMoney(pk.val_ex)} EUR be PVM</span>
             <span>📅 ${pk.korteles_data || '___'}</span>
             <span>👥 ${_komTip}</span>
+            <span>
+              ⚡ <select onchange="changePriority('${pk.id}', this.value)" style="border:none;background:transparent;font-weight:600;cursor:pointer;color:${pk.priority==='urgent'?'#DB354A':pk.priority==='low'?'#00A5C4':'var(--epso-graphite)'}">
+                <option value="normal" ${(pk.priority||'normal')==='normal'?'selected':''}>⚪ Normalus</option>
+                <option value="urgent" ${pk.priority==='urgent'?'selected':''}>🔴 Skubus</option>
+                <option value="low" ${pk.priority==='low'?'selected':''}>🔵 Žemas</option>
+              </select>
+            </span>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
@@ -1556,6 +1670,83 @@ function togglePfVote(cb){
 function editProcurement() {
   toast('Pirkimo duomenų redagavimas — kūrimosi stadijoje', 'ok');
 }
+function changePriority(pkId, newPriority){
+  const pk = getProcurement(pkId);
+  if(!pk) return;
+  pk.priority = newPriority;
+  saveProcurementData(pkId, pk);
+  logAudit('CHANGE_PRIORITY', pkId, {to: newPriority});
+  toast(`Prioritetas atnaujintas: ${newPriority==='urgent'?'🔴 Skubus':newPriority==='low'?'🔵 Žemas':'⚪ Normalus'}`,'success');
+  renderDetail(pkId);
+}
+
+// ════════════════════════════════════════════════════════
+// KOMENTARAI / PASTABOS PRIE PIRKIMO
+// ════════════════════════════════════════════════════════
+const CURRENT_USER = 'Arūnas Jurgelaitis';
+
+function addComment(){
+  const ta = document.getElementById('new-comment');
+  if(!ta) return;
+  const text = ta.value.trim();
+  if(!text){ toast('Įveskite komentaro tekstą','error'); return; }
+  const pk = getProcurement(currentPkId);
+  if(!pk) return;
+  if(!pk.comments) pk.comments = [];
+  const comment = {
+    id: 'cmt-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    text,
+    author: CURRENT_USER,
+    timestamp: new Date().toISOString()
+  };
+  pk.comments.push(comment);
+  saveProcurementData(currentPkId, pk);
+  logAudit('ADD_COMMENT', currentPkId, {commentId: comment.id, preview: text.slice(0,80)});
+  ta.value = '';
+  renderComments();
+  toast('💬 Komentaras pridėtas','success');
+}
+
+function deleteComment(commentId){
+  if(!confirm('Ar tikrai ištrinti šį komentarą?')) return;
+  const pk = getProcurement(currentPkId);
+  if(!pk || !pk.comments) return;
+  pk.comments = pk.comments.filter(c => c.id !== commentId);
+  saveProcurementData(currentPkId, pk);
+  logAudit('DELETE_COMMENT', currentPkId, {commentId});
+  renderComments();
+  toast('Komentaras ištrintas','success');
+}
+
+function renderComments(){
+  const pk = getProcurement(currentPkId);
+  if(!pk) return;
+  const list = pk.comments || [];
+  const sorted = [...list].sort((a,b) => (b.timestamp||'').localeCompare(a.timestamp||''));
+  const container = document.getElementById('comments-list');
+  const countEl = document.getElementById('comments-count');
+  if(countEl) countEl.textContent = list.length === 0 ? '(nėra)' : `(${list.length})`;
+  if(!container) return;
+  if(sorted.length === 0){
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--epso-graphite-50);font-size:13px">Komentarų dar nėra. Pridėkite pirmąjį aukščiau.</div>';
+    return;
+  }
+  container.innerHTML = sorted.map(c => {
+    const isMine = c.author === CURRENT_USER;
+    const initial = (c.author || '?').charAt(0);
+    return `<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--epso-graphite-15)">
+      <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:${isMine?'var(--epso-emerald)':'var(--epso-cyan)'};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${initial}</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <div><strong style="font-size:13px">${pnEscapeHtml(c.author)}</strong> <span style="font-size:11px;color:var(--epso-graphite-50);margin-left:6px">${fmtRelativeTime(c.timestamp)}</span></div>
+          ${isMine ? `<button onclick="deleteComment('${c.id}')" style="background:none;border:none;color:var(--epso-error);cursor:pointer;font-size:12px;padding:2px 6px" title="Ištrinti komentarą">🗑</button>` : ''}
+        </div>
+        <div style="font-size:14px;color:var(--epso-graphite);line-height:1.5;white-space:pre-wrap;word-break:break-word">${pnEscapeHtml(c.text)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function toggleArchive() {
   const pk = getProcurement(currentPkId);
   if(!pk) return;
@@ -1734,6 +1925,7 @@ function saveProcurement() {
     parts_enabled: document.getElementById('new-pk-parts').checked,
     confidential_appendix: document.getElementById('new-pk-confidential')?.checked || false,
     cpo_applicable: document.getElementById('new-pk-cpo-applicable')?.checked || false,
+    priority: document.getElementById('new-pk-priority')?.value || 'normal',
     parts,
     type: document.querySelector('.type-card.selected').dataset.type,
     eval_criteria: document.getElementById('new-eval-criteria').value,
@@ -4824,6 +5016,241 @@ function exportToExcel(){
     setSaveState('error');
     toast('Klaida eksportuojant: ' + e.message,'error');
   }
+}
+
+// ════════════════════════════════════════════════════════
+// EXCEL IMPORTAS — masinis pirkimų sukūrimas
+// ════════════════════════════════════════════════════════
+const IMPORT_COLUMNS = [
+  {key:'id', label:'Pirkimo Nr.', required:true, example:'26-PK10'},
+  {key:'name', label:'Pavadinimas', required:true, example:'Elektros tinklo techninė priežiūra'},
+  {key:'type', label:'Pirkimo būdas', required:true, example:'atviras_supaprastintas', hint:'atviras_tarptautinis | atviras_supaprastintas | derybos_tarptautinis | derybos_supaprastintas | neskelbiamos_tarptautinis | neskelbiamos_supaprastintas | dps_steigimas | dps_konkretus'},
+  {key:'val_ex', label:'Vertė be PVM (EUR)', required:true, example:50000},
+  {key:'val_inc', label:'Vertė su PVM (EUR)', required:false, example:60500, hint:'Jei tuščia — auto-skaičiuojama × 1.21'},
+  {key:'obj_type', label:'Objekto tipas', required:false, example:'paslaugos', hint:'prekes | paslaugos | darbai'},
+  {key:'terminas', label:'Sutarties trukmė (mėn.)', required:false, example:12},
+  {key:'korteles_data', label:'Kortelės data', required:false, example:'2026-06-01', hint:'Formatas YYYY-MM-DD'},
+  {key:'cvp_nr', label:'CVP IS Nr.', required:false, example:'CVP-2026-12345'},
+  {key:'priority', label:'Prioritetas', required:false, example:'normal', hint:'urgent | normal | low'},
+  {key:'kom_tipas', label:'Komisijos tipas', required:false, example:'nuolatine', hint:'nuolatine | ad_hoc'},
+  {key:'kom_chair', label:'Komisijos pirmininkas', required:true, example:'Arūnas Jurgelaitis'},
+  {key:'kom_secretary', label:'Komisijos sekretorius', required:false, example:'Tomas Jakubauskas'},
+  {key:'kom_members', label:'Komisijos nariai', required:false, example:'Aušra Želvienė; Giedrė Baltušytė', hint:'Atskirti ;'},
+  {key:'eval_criteria', label:'Vertinimo kriterijus', required:false, example:'kainos ir kokybės santykį'},
+  {key:'confidential_appendix', label:'Konfidencialūs priedai', required:false, example:'Ne', hint:'Taip | Ne'},
+  {key:'cpo_applicable', label:'CPO katalogo žyma', required:false, example:'Ne', hint:'Taip | Ne'}
+];
+
+function downloadImportTemplate(){
+  if(typeof XLSX === 'undefined'){ toast('Excel biblioteka neįkelta','error'); return; }
+  const headers = IMPORT_COLUMNS.map(c => c.label + (c.required ? ' *' : ''));
+  const exampleRow = IMPORT_COLUMNS.map(c => c.example || '');
+  const hintRow = IMPORT_COLUMNS.map(c => c.hint || '');
+  const data = [
+    ['LITGRID AB — Pirkimų masinio importo šablonas'],
+    ['Užpildykite eilutes — kiekviena eilutė = vienas naujas pirkimas. Eilutės su žvaigždute (*) yra privalomos.'],
+    [],
+    headers,
+    hintRow.map(h => h ? '👉 ' + h : ''),
+    exampleRow
+  ];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = IMPORT_COLUMNS.map(() => ({wch:24}));
+  ws['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:IMPORT_COLUMNS.length-1}}, {s:{r:1,c:0}, e:{r:1,c:IMPORT_COLUMNS.length-1}}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Pirkimai');
+  XLSX.writeFile(wb, `LITGRID_Pirkimu_Importo_Sablonas_${new Date().toISOString().split('T')[0]}.xlsx`);
+  logAudit('DOWNLOAD_TEMPLATE', null);
+  toast('📄 Šablonas atsisiųstas','success');
+}
+
+function importFromExcel(event){
+  if(typeof XLSX === 'undefined'){ toast('Excel biblioteka neįkelta','error'); return; }
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const wb = XLSX.read(e.target.result, {type: 'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rawData = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      // Surandam antraštės eilutę (kurioje yra "Pirkimo Nr.")
+      let headerRowIdx = -1;
+      for(let i = 0; i < Math.min(rawData.length, 10); i++){
+        if(rawData[i].some(c => String(c).includes('Pirkimo Nr.'))){ headerRowIdx = i; break; }
+      }
+      if(headerRowIdx === -1){ toast('Antraštė nerasta — naudokite atsisiųstą šabloną','error'); return; }
+      const headers = rawData[headerRowIdx].map(h => String(h).replace(/\s+\*$/, '').trim());
+      // Praleidžiam hint eilutę (jei yra)
+      let dataStartIdx = headerRowIdx + 1;
+      if(rawData[dataStartIdx] && rawData[dataStartIdx].some(c => String(c).startsWith('👉'))){
+        dataStartIdx++;
+      }
+      // Konvertuojam į objektus
+      const rows = [];
+      for(let i = dataStartIdx; i < rawData.length; i++){
+        const r = rawData[i];
+        if(!r || r.every(c => !c || String(c).trim() === '')) continue;
+        const obj = {};
+        IMPORT_COLUMNS.forEach((col, idx) => {
+          const hdrIdx = headers.findIndex(h => h === col.label);
+          if(hdrIdx >= 0) obj[col.key] = r[hdrIdx];
+        });
+        // Pavyzdinė eilutė (skip example row su exact match)
+        if(obj.id === '26-PK10' && obj.name === 'Elektros tinklo techninė priežiūra') continue;
+        rows.push(obj);
+      }
+      if(rows.length === 0){ toast('Faile nerasta pirkimų duomenų','error'); event.target.value = ''; return; }
+      showImportPreview(rows);
+      event.target.value = '';
+    } catch(err){
+      console.error(err);
+      toast('Klaida skaitant Excel: ' + err.message,'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function validateImportRow(row){
+  const errors = [];
+  IMPORT_COLUMNS.forEach(col => {
+    if(col.required && (!row[col.key] || String(row[col.key]).trim() === '')){
+      errors.push(`Trūksta: ${col.label}`);
+    }
+  });
+  const validTypes = ['atviras_tarptautinis','atviras_supaprastintas','derybos_tarptautinis','derybos_supaprastintas','neskelbiamos_tarptautinis','neskelbiamos_supaprastintas','dps_steigimas','dps_konkretus'];
+  if(row.type && !validTypes.includes(String(row.type).trim())){
+    errors.push(`Neteisingas pirkimo būdas: ${row.type}`);
+  }
+  if(row.val_ex && isNaN(parseFloat(row.val_ex))){
+    errors.push('Vertė turi būti skaičius');
+  }
+  const store = getProcurements();
+  if(row.id && store[String(row.id).trim()]){
+    errors.push(`Pirkimas ${row.id} jau egzistuoja`);
+  }
+  return errors;
+}
+
+let _importRows = [];
+
+function showImportPreview(rows){
+  _importRows = rows;
+  const validRows = [];
+  const invalidRows = [];
+  rows.forEach((r, i) => {
+    const errors = validateImportRow(r);
+    if(errors.length === 0) validRows.push({...r, _idx: i+1});
+    else invalidRows.push({...r, _idx: i+1, _errors: errors});
+  });
+
+  let html = `<div class="epso-modal__content" style="max-width:1000px">
+    <div class="epso-modal__header">
+      <h2 style="margin:0;font-size:17px">📥 Excel importo peržiūra</h2>
+      <button class="btn btn-secondary btn-sm" onclick="closeImportModal()">✕</button>
+    </div>
+    <div class="epso-modal__body">
+      <div style="display:flex;gap:12px;margin-bottom:14px">
+        <div style="flex:1;padding:12px 14px;background:var(--epso-green-15);border-radius:8px;border-left:3px solid var(--epso-emerald)">
+          <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase">Tinkami importui</div>
+          <div style="font-size:22px;font-weight:800;color:var(--epso-emerald-120)">${validRows.length}</div>
+        </div>
+        ${invalidRows.length > 0 ? `<div style="flex:1;padding:12px 14px;background:rgba(219,53,74,.08);border-radius:8px;border-left:3px solid var(--epso-error)">
+          <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase">Su klaidomis</div>
+          <div style="font-size:22px;font-weight:800;color:var(--epso-error)">${invalidRows.length}</div>
+        </div>` : ''}
+        <div style="flex:1;padding:12px 14px;background:#fff;border:1px solid var(--epso-graphite-15);border-radius:8px">
+          <div style="font-size:11px;color:var(--epso-graphite-50);font-weight:600;text-transform:uppercase">Bendra vertė</div>
+          <div style="font-size:22px;font-weight:800;color:var(--epso-graphite)">${formatMoney(validRows.reduce((s,r)=>s+(parseFloat(r.val_ex)||0),0))} EUR</div>
+        </div>
+      </div>`;
+
+  if(invalidRows.length > 0){
+    html += `<div style="background:rgba(219,53,74,.05);border:1px solid var(--epso-error);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-weight:700;color:var(--epso-error);margin-bottom:8px;font-size:13px">⚠ Eilutės su klaidomis (nebus importuojamos):</div>`;
+    invalidRows.forEach(r => {
+      html += `<div style="font-size:12px;color:var(--epso-graphite);margin-bottom:4px"><strong>Eil. ${r._idx}:</strong> ${r.id||'?'} — ${r.name||'?'} <span style="color:var(--epso-error)">→ ${r._errors.join('; ')}</span></div>`;
+    });
+    html += '</div>';
+  }
+
+  if(validRows.length > 0){
+    html += `<div style="font-weight:700;margin-bottom:8px;font-size:13px">Importuojami pirkimai:</div>
+    <div style="max-height:280px;overflow-y:auto;border:1px solid var(--epso-graphite-15);border-radius:8px">
+      <table class="epso-table" style="font-size:12px"><thead><tr><th>Nr.</th><th>Pavadinimas</th><th>Tipas</th><th>Vertė</th><th>Pirmininkas</th><th>Prioritetas</th></tr></thead><tbody>`;
+    validRows.forEach(r => {
+      const prio = (r.priority||'normal');
+      const prioBadge = prio==='urgent'?'🔴':(prio==='low'?'🔵':'⚪');
+      html += `<tr><td><strong>${r.id}</strong></td><td>${r.name}</td><td style="font-size:11px">${typeLabel(r.type)||r.type}</td><td>${formatMoney(parseFloat(r.val_ex)||0)} EUR</td><td>${r.kom_chair||'—'}</td><td>${prioBadge}</td></tr>`;
+    });
+    html += '</tbody></table></div>';
+  }
+
+  html += `</div>
+    <div class="epso-modal__footer">
+      <button class="btn btn-secondary" onclick="closeImportModal()">Atšaukti</button>
+      <button class="btn btn-primary" onclick="confirmImport()" ${validRows.length === 0 ? 'disabled' : ''}>📥 Importuoti ${validRows.length} pirkimą(-us)</button>
+    </div>
+  </div>`;
+
+  let modal = document.getElementById('import-modal');
+  if(!modal){ modal = document.createElement('div'); modal.id='import-modal'; modal.className='epso-modal'; document.body.appendChild(modal); }
+  modal.innerHTML = html;
+  modal.classList.add('show');
+}
+
+function closeImportModal(){
+  const m = document.getElementById('import-modal');
+  if(m) m.classList.remove('show');
+  _importRows = [];
+}
+
+function confirmImport(){
+  const store = getProcurements();
+  let imported = 0;
+  _importRows.forEach(r => {
+    const errors = validateImportRow(r);
+    if(errors.length > 0) return;
+    const id = String(r.id).trim();
+    const valEx = parseFloat(r.val_ex) || 0;
+    const valInc = parseFloat(r.val_inc) || (valEx * 1.21);
+    const members = String(r.kom_members||'').split(';').map(s=>s.trim()).filter(Boolean);
+    const pk = {
+      id,
+      name: String(r.name||'').trim(),
+      korteles_data: String(r.korteles_data||new Date().toISOString().split('T')[0]).trim(),
+      val_ex: valEx,
+      val_inc: valInc,
+      obj_type: String(r.obj_type||'paslaugos').trim(),
+      terminas: String(r.terminas||'').trim(),
+      parts_enabled: false,
+      parts: [],
+      confidential_appendix: String(r.confidential_appendix||'').toLowerCase().startsWith('t'),
+      cpo_applicable: String(r.cpo_applicable||'').toLowerCase().startsWith('t'),
+      priority: String(r.priority||'normal').trim(),
+      type: String(r.type||'').trim(),
+      eval_criteria: String(r.eval_criteria||'kainos ir kokybės santykį').trim(),
+      val_cat: deriveValCat(String(r.type||'').trim()),
+      komisija: {
+        tipas: String(r.kom_tipas||'nuolatine').trim(),
+        date: '', nr: '', name: '',
+        chair: String(r.kom_chair||'').trim(),
+        secretary: String(r.kom_secretary||'').trim(),
+        members: members,
+        nesaliskumas: false, nesaliskumasData: null
+      },
+      channel: 'cvp', cvp_nr: String(r.cvp_nr||'').trim(),
+      kval: 'abu', protocols: {},
+      createdAt: new Date().toISOString().split('T')[0],
+      importedFromExcel: true
+    };
+    store[id] = pk;
+    imported++;
+  });
+  saveStore(store);
+  logAudit('IMPORT_FROM_EXCEL', null, {count: imported});
+  toast(`✅ Importuota ${imported} pirkimas(-ai) iš Excel`,'success');
+  closeImportModal();
+  renderDashboard();
 }
 
 // ════════════════════════════════════════════════════════
