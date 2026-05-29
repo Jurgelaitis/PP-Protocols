@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LITGRID — Pirkimų Komisijos Sprendimų Centras v3</title>
+<title>LITGRID - Pirkimų Komisijos Sprendimų Centras v3</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <!--
 ================================================================================
-LITGRID AB — Pirkimų komisijos sprendimų centras v3.0
+LITGRID AB - Pirkimų komisijos sprendimų centras v3.0
 Autorius: Arūnas Jurgelaitis · Versija: 3.0 · Data: 2026-05-17
 
 Apjungti moduliai:
@@ -172,8 +172,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;mi
 .preview-logo-text{font-size:8.5pt;color:#555;text-align:right;line-height:1.5}
 
 /* ════════════════════════════════════════════════════════════
-   EPSO-G BRANDBOOK 2026 — Vizualinio identiteto sluoksnis (v3)
-   Pridedama prieš esamų stilių uždarymą — perima dominaciją.
+   EPSO-G BRANDBOOK 2026 - Vizualinio identiteto sluoksnis (v3)
+   Pridedama prieš esamų stilių uždarymą - perima dominaciją.
    ════════════════════════════════════════════════════════════ */
 :root {
   --epso-emerald: #00A072;
@@ -427,9 +427,9 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
             <div id="new-parts-list"></div>
             <button class="btn-add" onclick="addNewPart()" style="margin-top:6px">+ Pridėti dalį</button>
           </div>
-          <!-- Įspėjimas (5): jei neskaidoma — pagrindimas -->
+          <!-- Įspėjimas (5): jei neskaidoma - pagrindimas -->
           <div id="not-split-warning" style="margin-top:10px;padding:10px 14px;background:#fff5e6;border-left:3px solid var(--epso-warning);border-radius:6px;font-size:13px">
-            ⚠️ <strong>Pirkimo objektas nėra skaidomas į dalis.</strong> Įvertinkite, ar reikalingas pagrindimas dėl neskaidymo (Pirkimų įstatymo 28 str.). Jei reikalingas — pridėkite jį prie protokolo priedų.
+            ⚠️ <strong>Pirkimo objektas nėra skaidomas į dalis.</strong> Įvertinkite, ar reikalingas pagrindimas dėl neskaidymo (Pirkimų įstatymo 28 str.). Jei reikalingas - pridėkite jį prie protokolo priedų.
           </div>
         </div>
         <!-- (3) Konfidencialių priedų žyma -->
@@ -466,32 +466,32 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
         <div class="section-title">Pirkimo būdas</div>
         <div class="type-grid" id="type-selector">
           <div class="type-card selected" data-type="atviras_tarptautinis" onclick="selectType(this)">
-            <h4>Tarptautinis — Atviras konkursas</h4>
+            <h4>Tarptautinis - Atviras konkursas</h4>
             <p>Tarptautinės vertės pirkimas, skelbiamas ES leidinyje, be derybų</p>
             <span class="proto-count">5–6 protokolai</span>
           </div>
           <div class="type-card" data-type="atviras_supaprastintas" onclick="selectType(this)">
-            <h4>Supaprastintas — Atviras konkursas</h4>
+            <h4>Supaprastintas - Atviras konkursas</h4>
             <p>Supaprastintas pirkimas, be derybų, be paraiškų etapo</p>
             <span class="proto-count">5–6 protokolai</span>
           </div>
           <div class="type-card" data-type="derybos_tarptautinis" onclick="selectType(this)">
-            <h4>Tarptautinis — Skelbiamos derybos</h4>
+            <h4>Tarptautinis - Skelbiamos derybos</h4>
             <p>Tarptautinės vertės pirkimas su derybomis, su paraiškų etapu</p>
             <span class="proto-count">iki 14 protokolų</span>
           </div>
           <div class="type-card" data-type="derybos_supaprastintas" onclick="selectType(this)">
-            <h4>Supaprastintas — Skelbiamos derybos</h4>
+            <h4>Supaprastintas - Skelbiamos derybos</h4>
             <p>Supaprastintas pirkimas, derybos be paraiškų etapo</p>
             <span class="proto-count">iki 10 protokolų</span>
           </div>
           <div class="type-card" data-type="neskelbiamos_tarptautinis" onclick="selectType(this)">
-            <h4>Tarptautinis — Neskelbiamos derybos</h4>
+            <h4>Tarptautinis - Neskelbiamos derybos</h4>
             <p>Tarptautinis, neskelbiamos derybos</p>
             <span class="proto-count">iki 8 protokolų</span>
           </div>
           <div class="type-card" data-type="neskelbiamos_supaprastintas" onclick="selectType(this)">
-            <h4>Supaprastintas — Neskelbiamos derybos</h4>
+            <h4>Supaprastintas - Neskelbiamos derybos</h4>
             <p>Supaprastintas, neskelbiamos derybos</p>
             <span class="proto-count">iki 8 protokolų</span>
           </div>
@@ -560,7 +560,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
             <label>Komisijos narių nešališkumas <span class="tooltip-helper" title="PSĮ 23 str. + VPT gairės: deklaracijos pasirašomos iki pirmojo posėdžio.">ⓘ</span></label>
             <div style="margin-top:6px;padding:10px;background:var(--epso-green-5);border-radius:8px;border-left:3px solid var(--epso-emerald)">
               <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="new-kom-nesalisk"> Visi nariai pasirašė <strong>nešališkumo deklaracijas</strong> ir <strong>konfidencialumo pasižadėjimus</strong> iki pirmojo posėdžio</label>
-              <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: bet kuris narys, sužinojęs apie interesų konflikto pagrindą, privalo nusišalinti — fiksuojama protokole.</div>
+              <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:4px">VPT akcentuoja: bet kuris narys, sužinojęs apie interesų konflikto pagrindą, privalo nusišalinti - fiksuojama protokole.</div>
             </div>
           </div>
         </div>
@@ -699,38 +699,38 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
         <div class="epso-fg" style="margin-bottom:16px">
           <label>Pranešimo tipas (pagal VPK sprendimą) *</label>
           <select id="pn-template-id" onchange="onPnTemplateChange()">
-            <option value="">— Pasirinkite —</option>
+            <option value="">- Pasirinkite -</option>
             <optgroup label="Pasiūlymų vertinimas">
-              <option value="3_aritm_klaidos">Nr. 3 — Aritmetinių klaidų taisymas</option>
-              <option value="4_per_didele_kaina">Nr. 4 — Pasiūlymo atmetimas (per didelė kaina)</option>
-              <option value="5_pasiulymas_ok">Nr. 5 — Pasiūlymas atitinka reikalavimus</option>
-              <option value="15_nmk">Nr. 15 — Neįprastai mažos kainos pagrindimas</option>
-              <option value="16_galiojimas">Nr. 16 — Pasiūlymo galiojimo pratęsimas</option>
+              <option value="3_aritm_klaidos">Nr. 3 - Aritmetinių klaidų taisymas</option>
+              <option value="4_per_didele_kaina">Nr. 4 - Pasiūlymo atmetimas (per didelė kaina)</option>
+              <option value="5_pasiulymas_ok">Nr. 5 - Pasiūlymas atitinka reikalavimus</option>
+              <option value="15_nmk">Nr. 15 - Neįprastai mažos kainos pagrindimas</option>
+              <option value="16_galiojimas">Nr. 16 - Pasiūlymo galiojimo pratęsimas</option>
             </optgroup>
             <optgroup label="Laimėtojo paskelbimas">
-              <option value="8_galimas_laimetojas">Nr. 8 — Kreipimasis į galimą laimėtoją</option>
-              <option value="8_1_kitiems_galimas">Nr. 8.1 — Kitiems (galimas laimėtojas)</option>
-              <option value="9_laimetojui_kaina">Nr. 9 — Laimėtojui (kaina) ★</option>
-              <option value="9_1_laimetojui_ekonom">Nr. 9.1 — Laimėtojui (ekonominis naudingumas)</option>
-              <option value="10_kitiems_eile">Nr. 10 — Kitiems tiekėjams (eilė) ★</option>
-              <option value="11_kitiems_ekonom">Nr. 11 — Kitiems (ekonominis naudingumas)</option>
+              <option value="8_galimas_laimetojas">Nr. 8 - Kreipimasis į galimą laimėtoją</option>
+              <option value="8_1_kitiems_galimas">Nr. 8.1 - Kitiems (galimas laimėtojas)</option>
+              <option value="9_laimetojui_kaina">Nr. 9 - Laimėtojui (kaina) ★</option>
+              <option value="9_1_laimetojui_ekonom">Nr. 9.1 - Laimėtojui (ekonominis naudingumas)</option>
+              <option value="10_kitiems_eile">Nr. 10 - Kitiems tiekėjams (eilė) ★</option>
+              <option value="11_kitiems_ekonom">Nr. 11 - Kitiems (ekonominis naudingumas)</option>
             </optgroup>
             <optgroup label="Pirkimo pabaiga / atmetimas">
-              <option value="12_atmetimas">Nr. 12 — Pasiūlymo atmetimas ir pirkimo pabaiga ★</option>
-              <option value="12_1_visi_atmesti">Nr. 12.1 — Atmetami visi pasiūlymai</option>
-              <option value="12_2_kitiems_pabaiga">Nr. 12.2 — Kitiems (pirkimo pabaiga)</option>
+              <option value="12_atmetimas">Nr. 12 - Pasiūlymo atmetimas ir pirkimo pabaiga ★</option>
+              <option value="12_1_visi_atmesti">Nr. 12.1 - Atmetami visi pasiūlymai</option>
+              <option value="12_2_kitiems_pabaiga">Nr. 12.2 - Kitiems (pirkimo pabaiga)</option>
             </optgroup>
             <optgroup label="Sutarties sudarymas">
-              <option value="13_kvietimas_sutarti">Nr. 13 — Kvietimas sudaryti sutartį ★</option>
+              <option value="13_kvietimas_sutarti">Nr. 13 - Kvietimas sudaryti sutartį ★</option>
             </optgroup>
             <optgroup label="Pretenzijos">
-              <option value="14_pretenzija_sustabdymas">Nr. 14 — Procedūrų sustabdymas</option>
-              <option value="14_1_pretenzija_atm_pabaiga">Nr. 14.1 — Pretenzijos atmetimas (pirkimo pabaiga)</option>
-              <option value="14_2_pretenzija_atm_tesimas">Nr. 14.2 — Pretenzijos atmetimas (tęsimas)</option>
-              <option value="14_3_pretenzija_tenkinta">Nr. 14.3 — Pretenzijos (dalinis) tenkinimas</option>
+              <option value="14_pretenzija_sustabdymas">Nr. 14 - Procedūrų sustabdymas</option>
+              <option value="14_1_pretenzija_atm_pabaiga">Nr. 14.1 - Pretenzijos atmetimas (pirkimo pabaiga)</option>
+              <option value="14_2_pretenzija_atm_tesimas">Nr. 14.2 - Pretenzijos atmetimas (tęsimas)</option>
+              <option value="14_3_pretenzija_tenkinta">Nr. 14.3 - Pretenzijos (dalinis) tenkinimas</option>
             </optgroup>
           </select>
-          <div class="hint">★ — pažymėti svarbiausi pranešimai. BPS punktai parenkami automatiškai pagal pirkimo būdą.</div>
+          <div class="hint">★ - pažymėti svarbiausi pranešimai. BPS punktai parenkami automatiškai pagal pirkimo būdą.</div>
         </div>
 
         <div class="epso-fg" style="margin-bottom:16px">
@@ -823,7 +823,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 <div id="help-modal" class="epso-modal">
   <div class="epso-modal__content">
     <div class="epso-modal__header">
-      <h2 style="margin:0;font-size:18px">❓ Pagalba — VPK Sprendimų Centras v3</h2>
+      <h2 style="margin:0;font-size:18px">❓ Pagalba - VPK Sprendimų Centras v3</h2>
       <button class="btn btn-secondary btn-sm" onclick="closeHelp()">✕</button>
     </div>
     <div class="epso-modal__body">
@@ -832,11 +832,11 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 
       <h3 style="margin-bottom:8px;color:var(--epso-emerald)">Pagrindiniai moduliai</h3>
       <ul style="margin-left:24px;margin-bottom:16px">
-        <li><strong>Protokolų generatorius</strong> — VPK posėdžio protokolų DOCX generavimas (13 tipų)</li>
-        <li><strong>Pranešimų modulis</strong> — 19 šablonų tiekėjams (LT/LT-EN) su auto-terminų skaičiavimu</li>
-        <li><strong>Rizikų sistema</strong> — VPT pažymėtos rizikos automatiškai aptinkamos</li>
-        <li><strong>Audito žurnalas</strong> — visi veiksmai registruojami (PSĮ 103 str.)</li>
-        <li><strong>AI asistentas</strong> — clipboard kontekstas Claude/GPT motyvavimo formuluotėms</li>
+        <li><strong>Protokolų generatorius</strong> - VPK posėdžio protokolų DOCX generavimas (13 tipų)</li>
+        <li><strong>Pranešimų modulis</strong> - 19 šablonų tiekėjams (LT/LT-EN) su auto-terminų skaičiavimu</li>
+        <li><strong>Rizikų sistema</strong> - VPT pažymėtos rizikos automatiškai aptinkamos</li>
+        <li><strong>Audito žurnalas</strong> - visi veiksmai registruojami (PSĮ 103 str.)</li>
+        <li><strong>AI asistentas</strong> - clipboard kontekstas Claude/GPT motyvavimo formuluotėms</li>
       </ul>
 
       <h3 style="margin-bottom:8px;color:var(--epso-emerald)">VPT gairės, į kurias atsižvelgta</h3>
@@ -849,13 +849,13 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 
       <h3 style="margin-bottom:8px;color:var(--epso-emerald)">Sąsajos</h3>
       <ul style="margin-left:24px;margin-bottom:16px">
-        <li><strong>VPT Ekspertas</strong> — AI pagrįstas VP konsultantas</li>
+        <li><strong>VPT Ekspertas</strong> - AI pagrįstas VP konsultantas</li>
       </ul>
 
       <h3 style="margin-bottom:8px;color:var(--epso-emerald)">Klaviatūros sutrumpinimai</h3>
       <ul style="margin-left:24px">
-        <li><kbd>Esc</kbd> — uždaryti modalo langą</li>
-        <li><kbd>Ctrl</kbd> + <kbd>K</kbd> — greita paieška pirkimų sąraše</li>
+        <li><kbd>Esc</kbd> - uždaryti modalo langą</li>
+        <li><kbd>Ctrl</kbd> + <kbd>K</kbd> - greita paieška pirkimų sąraše</li>
       </ul>
     </div>
     <div class="epso-modal__footer">
@@ -927,7 +927,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
       <button class="btn btn-secondary btn-sm" onclick="closeCopyModal()">✕</button>
     </div>
     <div class="epso-modal__body">
-      <p style="margin-bottom:14px;color:var(--epso-graphite-50);font-size:13px">Pasirinkite egzistuojantį pirkimą — jo duomenys (komisija, pirkimo būdas, parametrai) bus nukopijuoti į naują pirkimą. <strong>NEKOPIJUOJAMA:</strong> ID, sukūrimo data, sugeneruoti protokolai, pranešimai, audito istorija.</p>
+      <p style="margin-bottom:14px;color:var(--epso-graphite-50);font-size:13px">Pasirinkite egzistuojantį pirkimą - jo duomenys (komisija, pirkimo būdas, parametrai) bus nukopijuoti į naują pirkimą. <strong>NEKOPIJUOJAMA:</strong> ID, sukūrimo data, sugeneruoti protokolai, pranešimai, audito istorija.</p>
 
       <div class="epso-fg" style="margin-bottom:14px">
         <label>Naujo pirkimo Nr. *</label>
@@ -936,7 +936,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
 
       <div class="epso-fg" style="margin-bottom:14px">
         <label>Naujo pirkimo pavadinimas (pasirinktinai)</label>
-        <input type="text" id="copy-new-name" placeholder="Palikite tuščią — bus naudojamas šaltinio pavadinimas" style="padding:10px 12px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans">
+        <input type="text" id="copy-new-name" placeholder="Palikite tuščią - bus naudojamas šaltinio pavadinimas" style="padding:10px 12px;border:1px solid var(--epso-graphite-15);border-radius:8px;font-family:Nunito Sans">
       </div>
 
       <div style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--epso-graphite)">Šaltinio pirkimas:</div>
@@ -960,7 +960,7 @@ body { font-family: "Nunito Sans", Arial, sans-serif !important; background: var
       </div>
     </div>
     <div class="epso-modal__body">
-      <p style="margin-bottom:12px;color:var(--epso-graphite-50);font-size:13px">Visi sistemos veiksmai pagal <strong>PSĮ 97 str.</strong> (vidaus kontrolė) ir <strong>PSĮ 103 str.</strong> (dokumentų saugojimas — min. 4 metai).</p>
+      <p style="margin-bottom:12px;color:var(--epso-graphite-50);font-size:13px">Visi sistemos veiksmai pagal <strong>PSĮ 97 str.</strong> (vidaus kontrolė) ir <strong>PSĮ 103 str.</strong> (dokumentų saugojimas - min. 4 metai).</p>
       <div class="audit-log" id="global-audit-container"></div>
     </div>
   </div>
@@ -1098,7 +1098,7 @@ function closePreview() {
 }
 
 function buildPreviewAgenda(pk, proto, posDate, vienbalsiai) {
-  // Simplified agenda preview — shows protocol title + key fields
+  // Simplified agenda preview - shows protocol title + key fields
   const d = pk;
   const money = v => typeof v==='number' ? v.toLocaleString('lt-LT',{minimumFractionDigits:2,maximumFractionDigits:2}) : (v||'0,00');
   const chk = v => v ? '☑' : '☐';
@@ -1125,7 +1125,7 @@ function buildPreviewAgenda(pk, proto, posDate, vienbalsiai) {
   if (suppliers.length > 0) {
     rows += `<tr><td colspan="2"><b>Gauti pasiūlymai / paraiškos (${suppliers.length}):</b><table style="width:100%;margin-top:6px">
       <tr><td style="font-weight:700;width:40px">Nr.</td><td style="font-weight:700">Tiekėjas</td><td style="font-weight:700">Gauta</td><td style="font-weight:700">Pastabos</td></tr>
-      ${suppliers.map((s,i)=>`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.received}</td><td>${s.note||'—'}</td></tr>`).join('')}
+      ${suppliers.map((s,i)=>`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.received}</td><td>${s.note||'-'}</td></tr>`).join('')}
     </table></td></tr>`;
   }
 
@@ -1262,14 +1262,14 @@ function deriveValCat(type){
 
 function typeLabel(type) {
   const map = {
-    atviras_tarptautinis: 'Tarptautinis — Atviras konkursas',
-    dps_steigimas: 'DPS — Dinaminė pirkimo sistema (steigimas)',
-    dps_konkretus: 'DPS — Konkretus pirkimas pagal DPS',
-    atviras_supaprastintas: 'Supaprastintas — Atviras konkursas',
-    derybos_tarptautinis: 'Tarptautinis — Skelbiamos derybos',
-    derybos_supaprastintas: 'Supaprastintas — Skelbiamos derybos',
-    neskelbiamos_tarptautinis: 'Tarptautinis — Neskelbiamos derybos',
-    neskelbiamos_supaprastintas: 'Supaprastintas — Neskelbiamos derybos',
+    atviras_tarptautinis: 'Tarptautinis - Atviras konkursas',
+    dps_steigimas: 'DPS - Dinaminė pirkimo sistema (steigimas)',
+    dps_konkretus: 'DPS - Konkretus pirkimas pagal DPS',
+    atviras_supaprastintas: 'Supaprastintas - Atviras konkursas',
+    derybos_tarptautinis: 'Tarptautinis - Skelbiamos derybos',
+    derybos_supaprastintas: 'Supaprastintas - Skelbiamos derybos',
+    neskelbiamos_tarptautinis: 'Tarptautinis - Neskelbiamos derybos',
+    neskelbiamos_supaprastintas: 'Supaprastintas - Neskelbiamos derybos',
   };
   return map[type] || type;
 }
@@ -1315,7 +1315,7 @@ function renderDashboard() {
   const list = document.getElementById('pk-list');
   const pks = Object.values(store);
 
-  // === SMART STATISTIKA — viršuje ===
+  // === SMART STATISTIKA - viršuje ===
   const stats = { total: pks.length, inProgress: 0, done: 0, notStarted: 0, totalValue: 0, highRisk: 0 };
   // Statistika skaičiuojama tik aktyviems (ne archyvuotiems)
   const activePks = pks.filter(pk => !pk.archived);
@@ -1335,7 +1335,7 @@ function renderDashboard() {
 
   // SKUBŪS PIRKIMAI widget (rodomas tik kai > 0)
   const urgent_html = stats.urgent > 0 ? `
-  <div onclick="dashFilter.priority='urgent';rerenderPkList();document.querySelector('select[onchange*=\'dashFilter.priority\']').value='urgent'" style="background:linear-gradient(135deg, #DB354A 0%, #B82B3D 100%);color:#fff;padding:18px 22px;border-radius:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 4px 14px rgba(219,53,74,.25);transition:transform 200ms ease,box-shadow 200ms ease" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(219,53,74,.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(219,53,74,.25)'" title="Spauskite — filtruoti tik skubius pirkimus">
+  <div onclick="dashFilter.priority='urgent';rerenderPkList();document.querySelector('select[onchange*=\'dashFilter.priority\']').value='urgent'" style="background:linear-gradient(135deg, #DB354A 0%, #B82B3D 100%);color:#fff;padding:18px 22px;border-radius:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 4px 14px rgba(219,53,74,.25);transition:transform 200ms ease,box-shadow 200ms ease" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(219,53,74,.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(219,53,74,.25)'" title="Spauskite - filtruoti tik skubius pirkimus">
     <div style="display:flex;align-items:center;gap:16px">
       <div style="font-size:34px;animation:pulse 1.6s ease-in-out infinite">🔴</div>
       <div>
@@ -1520,7 +1520,7 @@ function rerenderPkList(){
     return `<div class="pk-card" onclick="openProcurement('${pk.id}')" style="${priorityBorder}${archivedStyle}">
       <div class="pk-badge">${pk.id}</div>
       <div class="pk-info">
-        <h3>${priorityBadge}${archivedBadge}${pk.name || '—'}</h3>
+        <h3>${priorityBadge}${archivedBadge}${pk.name || '-'}</h3>
         <div class="meta">${statusBadge}${riskBadge} <span class="badge ${typeColors[pk.type]||'badge-gray'}" style="margin-left:6px">${typeLabel(pk.type)}</span> &nbsp;${pk.korteles_data||''} &nbsp;·&nbsp; ${formatMoney(pk.val_ex||0)} EUR${pk.lastAccessedAt ? ` &nbsp;·&nbsp; <span style="color:var(--epso-graphite-50);font-style:italic">👁 ${fmtRelativeTime(pk.lastAccessedAt)}</span>` : ''}</div>
       </div>
       <div class="pk-progress">
@@ -1544,13 +1544,13 @@ function openProcurement(id) {
   showPage('page-detail');
 }
 
-// Ctrl+K / Cmd+K — fokusuoti paieškos lauką dashboard'e
+// Ctrl+K / Cmd+K - fokusuoti paieškos lauką dashboard'e
 document.addEventListener('keydown', e => {
   if((e.ctrlKey || e.metaKey) && e.key === 'k'){
     e.preventDefault();
     const search = document.getElementById('dash-search');
     if(search){
-      // Jei ne dashboard puslapyje — pereiti į jį
+      // Jei ne dashboard puslapyje - pereiti į jį
       if(!document.getElementById('page-dashboard')?.classList.contains('active')){
         showPage('page-dashboard');
         setTimeout(() => { document.getElementById('dash-search')?.focus(); }, 100);
@@ -1668,7 +1668,7 @@ function togglePfVote(cb){
 }
 
 function editProcurement() {
-  toast('Pirkimo duomenų redagavimas — kūrimosi stadijoje', 'ok');
+  toast('Pirkimo duomenų redagavimas - kūrimosi stadijoje', 'ok');
 }
 function changePriority(pkId, newPriority){
   const pk = getProcurement(pkId);
@@ -1766,7 +1766,7 @@ function toggleArchive() {
 }
 
 function deleteProcurement() {
-  if (!confirm(`Ar tikrai ištrinti pirkimą ${currentPkId}? Visi duomenys bus prarasti.\n\n💡 Patarimas: jei norite tik laikinai paslėpti — naudokite „📦 Archyvuoti" mygtuką.`)) return;
+  if (!confirm(`Ar tikrai ištrinti pirkimą ${currentPkId}? Visi duomenys bus prarasti.\n\n💡 Patarimas: jei norite tik laikinai paslėpti - naudokite „📦 Archyvuoti" mygtuką.`)) return;
   deleteProc(currentPkId);
   showPage('page-dashboard');
   toast('Pirkimas ištrintas');
@@ -1902,7 +1902,7 @@ function saveProcurement() {
       return;
     }
   }
-  // P1 validacija: PSĮ 31 str. — min. 3 nariai
+  // P1 validacija: PSĮ 31 str. - min. 3 nariai
   const _chair = document.getElementById('new-kom-chair').value.trim();
   const _sec = document.getElementById('new-kom-sec').value.trim();
   const _mems = [...document.querySelectorAll('#new-kom-members .narys')].map(i=>i.value).filter(v=>v);
@@ -1980,7 +1980,7 @@ function openProtocol(pkId, protoId) {
   const proto = seq.find(p => p.id === protoId);
   document.getElementById('proto-title').textContent = `Protokolas ${proto.num}: ${proto.name}`;
   document.getElementById('proto-pk-info').innerHTML = `
-    <strong>${pkId}</strong> — ${pk.name} &nbsp;·&nbsp;
+    <strong>${pkId}</strong> - ${pk.name} &nbsp;·&nbsp;
     <span class="badge badge-blue">${typeLabel(pk.type)}</span> &nbsp;·&nbsp;
     Vertė: ${formatMoney(pk.val_ex)} EUR be PVM
   `;
@@ -2046,7 +2046,7 @@ function buildForm_Proto1(pk) {
       </div>
       <div class="chk-row"><input type="checkbox" id="pf-kaina-only"> <label for="pf-kaina-only">Kainos naudojamos tik vertinimui (preliminarus kiekis)</label></div>
       <div class="chk-row"><input type="checkbox" id="pf-max-kaina" onchange="document.getElementById('pf-max-row').style.display=this.checked?'grid':'none'">
-        <label for="pf-max-kaina">Nustatyti maksimalią kainą (viršijus — per didelė)</label></div>
+        <label for="pf-max-kaina">Nustatyti maksimalią kainą (viršijus - per didelė)</label></div>
       <div class="form-grid" id="pf-max-row" style="display:none;margin-top:6px">
         <div class="fg"><label>Max kaina be PVM (EUR)</label><input type="number" id="pf-max-ex" step="0.01"></div>
         <div class="fg"><label>Max kaina su PVM (EUR)</label><input type="number" id="pf-max-inc" step="0.01"></div>
@@ -2116,7 +2116,7 @@ function buildForm_Proto2(pk) {
           <div class="fg"><label>Pratęsimo priežastis</label><input type="text" id="pf-term-reason" placeholder="pvz.: atsakymai paveikia pasiūlymo parengimą"></div>
         </div>
         <div class="chk-row" style="margin-top:10px"><input type="checkbox" id="pf-bps193" onchange="document.getElementById('pf-bps193-row').style.display=this.checked?'block':'none'">
-          <label for="pf-bps193">Vėluojant pateikti atsakymą — BPS 19.3 p. (mažai dienų iki termino pabaigos)</label></div>
+          <label for="pf-bps193">Vėluojant pateikti atsakymą - BPS 19.3 p. (mažai dienų iki termino pabaigos)</label></div>
         <div id="pf-bps193-row" style="display:none;margin-top:8px;padding:10px;background:var(--epso-cyan-5);border-radius:6px;border-left:3px solid var(--epso-cyan)">
           <div class="form-grid">
             <div class="fg"><label>Likę dienų iki termino pabaigos</label>
@@ -2212,7 +2212,7 @@ function buildTiekRow(n, tech=false) {
     <td><input type="number" class="t-ex" step="0.01" placeholder="0.00"></td>
     <td><input type="number" class="t-inc" step="0.01" placeholder="0.00"></td>
     ${tech ? '<td><textarea class="t-tech" rows="2" placeholder="Techninės charakteristikos arba \'Žr. priedą\'"></textarea></td>' : ''}
-    <td><input type="text" class="t-note" placeholder="—"></td>
+    <td><input type="text" class="t-note" placeholder="-"></td>
     <td><button class="tiekojai-table .del-btn" onclick="this.closest('tr').remove()" style="background:none;border:none;cursor:pointer;color:#e53e3e;font-size:14px">✕</button></td>
   </tr>`;
 }
@@ -2340,7 +2340,7 @@ function buildForm_ProtoD3(pk) {
   <div class="card-body">
     <div class="form-grid"><div class="fg"><label>Gautų paraiškų skaičius</label><input type="number" id="pf-paraiszkos-cnt" value="3" min="0"></div></div>
     <table class="tiekojai-table"><thead><tr><th>Nr.</th><th>Tiekėjo pavadinimas</th><th>Paraiška gauta</th><th>Pastabos</th></tr></thead>
-    <tbody id="pf-par-tbody">${[1,2,3].map(n=>`<tr><td>${n}</td><td><input type="text" class="par-name" placeholder="UAB „...""></td><td><select class="par-gauta"><option value="taip">Taip</option><option value="ne">Ne</option></select></td><td><input type="text" class="par-note" placeholder="—"></td></tr>`).join('')}</tbody></table>
+    <tbody id="pf-par-tbody">${[1,2,3].map(n=>`<tr><td>${n}</td><td><input type="text" class="par-name" placeholder="UAB „...""></td><td><select class="par-gauta"><option value="taip">Taip</option><option value="ne">Ne</option></select></td><td><input type="text" class="par-note" placeholder="-"></td></tr>`).join('')}</tbody></table>
     <button class="btn-add" onclick="addParRow()">+ Pridėti</button>
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
@@ -2353,14 +2353,14 @@ function buildForm_ProtoD3(pk) {
       </div>
   </div></div>`;
 }
-function addParRow(){const t=document.getElementById('pf-par-tbody');const n=t.rows.length+1;t.insertAdjacentHTML('beforeend',`<tr><td>${n}</td><td><input type="text" class="par-name" placeholder="UAB „...""></td><td><select class="par-gauta"><option value="taip">Taip</option><option value="ne">Ne</option></select></td><td><input type="text" class="par-note" placeholder="—"></td></tr>`);}
+function addParRow(){const t=document.getElementById('pf-par-tbody');const n=t.rows.length+1;t.insertAdjacentHTML('beforeend',`<tr><td>${n}</td><td><input type="text" class="par-name" placeholder="UAB „...""></td><td><select class="par-gauta"><option value="taip">Taip</option><option value="ne">Ne</option></select></td><td><input type="text" class="par-note" placeholder="-"></td></tr>`);}
 
 function buildForm_ProtoD3_1(pk) {
   return `<div class="card"><div class="card-header" onclick="toggleCard(this)">Susipažinimas su paraiškų turiniu <span class="arrow">▼</span></div>
   <div class="card-body">
     <div class="info-box">Fiksuojamas paraiškų turinys ir techniniai duomenys pagal techninę specifikaciją.</div>
     <table class="tiekojai-table"><thead><tr><th>Nr.</th><th>Tiekėjas</th><th>Paraiška atitinka min. reikalavimus</th><th>Techninės charakteristikos</th><th>Pastabos</th></tr></thead>
-    <tbody id="pf-par31-tbody">${[1,2].map(n=>`<tr><td>${n}</td><td><input type="text" class="p31-name" placeholder="Tiekėjas"></td><td><select class="p31-atit"><option value="taip">Taip</option><option value="ne">Ne</option></select></td><td><textarea class="p31-tech" rows="2" placeholder="Techniniai duomenys..."></textarea></td><td><input type="text" class="p31-note" placeholder="—"></td></tr>`).join('')}</tbody></table>
+    <tbody id="pf-par31-tbody">${[1,2].map(n=>`<tr><td>${n}</td><td><input type="text" class="p31-name" placeholder="Tiekėjas"></td><td><select class="p31-atit"><option value="taip">Taip</option><option value="ne">Ne</option></select></td><td><textarea class="p31-tech" rows="2" placeholder="Techniniai duomenys..."></textarea></td><td><input type="text" class="p31-note" placeholder="-"></td></tr>`).join('')}</tbody></table>
     <button class="btn-add" onclick="document.getElementById('pf-par31-tbody').insertAdjacentHTML('beforeend', buildPar31Row())">+ Pridėti</button>
     <hr class="divider"><div class="chk-row"><input type="checkbox" id="pf-vienbalsiai" checked onchange="togglePfVote(this)"><label for="pf-vienbalsiai">Sprendimai priimti vienbalsiai</label></div>
       <div id="pf-vote-section" style="display:none;background:var(--epso-green-5);padding:12px;border-radius:8px;margin-top:8px;border-left:3px solid var(--epso-emerald)">
@@ -2435,7 +2435,7 @@ function buildForm_ProtoD4(pk) {
       </div>
   </div></div>`;
 }
-// addPvRow — nebenaudojama (vietoje table — kortelės D4)
+// addPvRow - nebenaudojama (vietoje table - kortelės D4)
 
 function buildForm_ProtoD5(pk) {
   return `<div class="card"><div class="card-header" onclick="toggleCard(this)">Pirminiai pasiūlymai (kainos) <span class="arrow">▼</span></div>
@@ -2548,7 +2548,7 @@ function buildForm_ProtoD6(pk){
       </div>
   </div></div>`;
 }
-// addD6Row — nebenaudojama, naudojamas inline addD6Row iš buildForm_ProtoD6
+// addD6Row - nebenaudojama, naudojamas inline addD6Row iš buildForm_ProtoD6
 
 
 function buildForm_ProtoD6_1(pk){
@@ -2639,7 +2639,7 @@ function buildD8Row(n){
       <div class="fg"><label>Vieta eilėje</label><input type="number" class="d8-vieta" min="1" placeholder="1"></div>
     </div>
     <div class="d8-neat-detail form-grid full" style="display:none;margin-top:8px">
-      <div class="fg"><label>Neatitikimo / atmetimo motyvas</label><textarea class="d8-motyvas" rows="2" placeholder="Pvz., Pasiūlymas neatitinka tech. specifikacijos X.X p. — ..."></textarea></div>
+      <div class="fg"><label>Neatitikimo / atmetimo motyvas</label><textarea class="d8-motyvas" rows="2" placeholder="Pvz., Pasiūlymas neatitinka tech. specifikacijos X.X p. - ..."></textarea></div>
       <div class="fg"><label>Pirkimo sąlygų p. (atmetimui)</label><input type="text" class="d8-atm-pp" placeholder="pvz.: 9.7.1"></div>
     </div>
     <div class="form-grid full" style="margin-top:8px">
@@ -2679,7 +2679,7 @@ function buildForm_ProtoD8(pk){
       </div>
   </div></div>`;
 }
-// addD8Row — nebenaudojama (kortelių formatas)
+// addD8Row - nebenaudojama (kortelių formatas)
 
 function addPriedas(containerId) {
   const c = document.getElementById(containerId);
@@ -2915,7 +2915,7 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
         ep()
       ]),
     ],{w:CW})]}));
-    // BPS 19.3 — vėluojant pateikti atsakymą
+    // BPS 19.3 - vėluojant pateikti atsakymą
     const bps193 = document.getElementById('pf-bps193')?.checked;
     const bps193Days = document.getElementById('pf-bps193-days')?.value || '4';
     if(bps193){
@@ -2956,7 +2956,7 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
     ],{w:CW})]}));
     const LC2=hasKokybe?[Math.round(CW*.04),Math.round(CW*.22),Math.round(CW*.18),Math.round(CW*.18),Math.round(CW*.24),Math.round(CW*.14)]:[Math.round(CW*.05),Math.round(CW*.30),Math.round(CW*.22),Math.round(CW*.22),Math.round(CW*.21)];
     const tHead=new TableRow({children:[cl([pr([b('Nr.')])],{w:LC2[0],sh:'EEF2F7'}),cl([pr([b('Tiek\u0117jo pavadinimas')])],{w:LC2[1],sh:'EEF2F7'}),cl([pr([b('Kaina be PVM (EUR)')])],{w:LC2[2],sh:'EEF2F7'}),cl([pr([b('Kaina su PVM (EUR)')])],{w:LC2[3],sh:'EEF2F7'}),...(hasKokybe?[cl([pr([b('Tech. charakteristikos')])],{w:LC2[4],sh:'EEF2F7'})]:[] ),cl([pr([b('Pastabos')])],{w:LC2[hasKokybe?5:4],sh:'EEF2F7'})]});
-    const tRows=tiekojai.map((t,i)=>new TableRow({children:[cl([pr([n(`${i+1}.`)])],{w:LC2[0]}),cl([pr([n(t.name)])],{w:LC2[1]}),cl([pr([n(formatMoney(t.ex))])],{w:LC2[2]}),cl([pr([n(formatMoney(t.inc))])],{w:LC2[3]}),...(hasKokybe?[cl([pr([n(t.tech||'—')])],{w:LC2[4]})]:[] ),cl([pr([n(t.note||'—')])],{w:LC2[hasKokybe?5:4]})]}));
+    const tRows=tiekojai.map((t,i)=>new TableRow({children:[cl([pr([n(`${i+1}.`)])],{w:LC2[0]}),cl([pr([n(t.name)])],{w:LC2[1]}),cl([pr([n(formatMoney(t.ex))])],{w:LC2[2]}),cl([pr([n(formatMoney(t.inc))])],{w:LC2[3]}),...(hasKokybe?[cl([pr([n(t.tech||'-')])],{w:LC2[4]})]:[] ),cl([pr([n(t.note||'-')])],{w:LC2[hasKokybe?5:4]})]}));
     rows.push(new TableRow({children:[cl([new Table({width:{size:CW-160,type:WidthType.DXA},columnWidths:LC2,rows:[tHead,...tRows]})],{w:CW})]}));
     rows.push(hdr1('2. SPRENDIMAS (-AI)'));
     rows.push(new TableRow({children:[cl([pr([b('1. Susipa\u017einti su pasi\u016blym\u0173 kainom\u0173 informacija.')]),pr([b('2. Paskirti komisijos narius pasi\u016blymams \u012fvertinti.')])],{w:CW})]}));
@@ -3091,7 +3091,7 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
     rows.push(new TableRow({children:[cl([pr([n('\u2611 1 priedas. Pirminiai pasiulymai.')])],{w:CW})]}));
   }
   else if (id==='D6' || id==='N4') {
-    // Naudojama nauja D6 forma — kortelės su detaliais laukais
+    // Naudojama nauja D6 forma - kortelės su detaliais laukais
     rows.push(hdr1('1. SVARSTYTA'));
     const d6rows = [...document.querySelectorAll('#pf-d6-list .d6-row')];
     const d6Tlines = [];
@@ -3306,7 +3306,7 @@ function buildAgendaRows(pk, proto, posDate, chk, b, n, pr, ep, cl, hdr, hdr1, C
 }
 
 // ════════════════════════════════════════════════════════
-// V3 EXTENSIONS — Pranešimai, Audito žurnalas, Rizikos,
+// V3 EXTENSIONS - Pranešimai, Audito žurnalas, Rizikos,
 // AI asistentas, VPT Ekspertas sąsajos
 // Šablonų versija: v1.0 (2026-05-17, paskutinė teisininkų peržiūra)
 // ════════════════════════════════════════════════════════
@@ -3589,9 +3589,9 @@ const PN_TEMPLATES = {
 // (Notes 2: pranešimai integruoti POD kiekvienu protokolu)
 // ─────────────────────────────────────────────────────────
 const PROTOCOL_NOTIFICATIONS = {
-  'A1': [], 'D1': [], 'N1': [],  // Pirkimo organizavimo — pranešimų nėra
+  'A1': [], 'D1': [], 'N1': [],  // Pirkimo organizavimo - pranešimų nėra
   'A2': ['0_atsakymai'], 'D2': ['0_atsakymai'], 'N2': ['0_atsakymai'],  // Atsakymai į klausimus
-  'A3': [], 'A3b': [],  // Susipažinimas su pasiūlymais — pranešimų nėra
+  'A3': [], 'A3b': [],  // Susipažinimas su pasiūlymais - pranešimų nėra
   'A4': ['3_aritm_klaidos','4_per_didele_kaina','5_pasiulymas_ok','8_galimas_laimetojas','8_1_kitiems_galimas','12_atmetimas','12_1_visi_atmesti','12_2_kitiems_pabaiga','16_galiojimas'],
   'A5': ['9_laimetojui_kaina','9_1_laimetojui_ekonom','10_kitiems_eile','11_kitiems_ekonom','13_kvietimas_sutarti','15_nmk','12_atmetimas','14_pretenzija_sustabdymas','14_1_pretenzija_atm_pabaiga','14_2_pretenzija_atm_tesimas','14_3_pretenzija_tenkinta'],
   'D3': [], 'D3_1': [],  // Susipažinimas su paraiškomis
@@ -3620,7 +3620,8 @@ function getNotifsForProtocol(pkId, protoId){
 }
 
 function renderProtocolDocuments(pkId, protoId){
-  // Grąžina HTML su sugeneruotų dokumentų sąrašu + galimais pranešimais šiam protokolui
+  // Apple-style: vienas pagrindinis mygtukas „Sukurti visus dokumentus",
+  // aiškūs statusai, jokio techninio žargono.
   const pk = getProcurement(pkId);
   if(!pk) return '';
   const proto = (pk.protocols||{})[protoId] || {};
@@ -3630,43 +3631,260 @@ function renderProtocolDocuments(pkId, protoId){
   const availableNotifs = getProtocolNotifications(protoId);
   const createdNotifs = getNotifsForProtocol(pkId, protoId);
 
-  let html = `<div class="card" style="margin-top:16px"><div class="card-header" style="cursor:default"><span>📂 Sugeneruoti dokumentai (Protokolas ${protoInfo.num})</span></div><div class="card-body">`;
+  const notifsByTpl = {};
+  availableNotifs.forEach(tId => { notifsByTpl[tId] = createdNotifs.filter(n => n.templateId === tId); });
+  const generatedCount = Object.values(notifsByTpl).filter(arr => arr.length > 0).length;
+  const allReady = isDone && (availableNotifs.length === 0 || generatedCount === availableNotifs.length);
 
-  // 1. Pats protokolas
-  html += `<div class="notification-item" style="margin-bottom:8px"><div><div class="notification-item__title">📄 ${protoInfo.name}</div><div class="notification-item__meta">${isDone ? '✓ Sugeneruota: '+(proto.date||'') : 'Dar nesugeneruotas'}</div></div>`;
-  if(isDone){
-    html += `<span class="epso-badge epso-badge--ready">Paruošta</span>`;
+  let html = `<div class="card" style="margin-top:20px;border:1px solid var(--epso-graphite-15);box-shadow:0 4px 12px rgba(46,54,65,.06)">
+    <div class="card-header" style="cursor:default;background:linear-gradient(135deg, var(--epso-emerald) 0%, var(--epso-emerald-120) 100%);color:#fff;padding:14px 22px">
+      <span style="color:#fff;font-size:15px;font-weight:700">✨ Dokumentų generavimas</span>
+    </div>
+    <div class="card-body" style="padding:28px 24px">`;
+
+  // Status karoliukas su pagrindiniu veiksmu
+  if(allReady){
+    html += `<div style="text-align:center;padding:22px;background:var(--epso-green-5);border-radius:14px;margin-bottom:24px;border:1px solid var(--epso-green-15)">
+      <div style="font-size:42px;line-height:1;margin-bottom:8px">✅</div>
+      <div style="font-size:16px;font-weight:700;color:var(--epso-emerald-120);margin-bottom:4px">Visi dokumentai sukurti</div>
+      <div style="font-size:13px;color:var(--epso-graphite-50)">Galite atsisiųsti dar kartą arba peržiūrėti pranešimus žemiau</div>
+    </div>`;
   } else {
-    html += `<span class="epso-badge epso-badge--draft">Juodraštis</span>`;
+    const totalDocs = 1 + availableNotifs.length;
+    const remainingDocs = (isDone ? 0 : 1) + (availableNotifs.length - generatedCount);
+    html += `<div style="text-align:center;padding:24px;background:linear-gradient(135deg, var(--epso-cyan-5) 0%, #fff 100%);border-radius:14px;margin-bottom:24px;border:1px solid var(--epso-cyan)">
+      <div style="font-size:14px;color:var(--epso-graphite);margin-bottom:14px;line-height:1.5">${remainingDocs === totalDocs ? 'Užpildę formą sukurkite visus dokumentus vienu paspaudimu' : `Liko sukurti: <strong>${remainingDocs}</strong> dokumentų`}</div>
+      <button class="btn btn-primary" style="font-size:15px;padding:14px 36px;box-shadow:0 4px 12px rgba(0,160,114,.3)" onclick="generateAllDocuments('${protoId}')">
+        ✨ Sukurti visus dokumentus
+      </button>
+      <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:10px">Sukurs ${totalDocs} dokument${totalDocs===1?'ą':'us'} ir atsisius kaip .docx failus</div>
+    </div>`;
   }
-  html += `<button class="btn btn-primary btn-sm" onclick="generateCurrentProtocol()">⬇ Generuoti DOCX</button></div>`;
 
-  // 2. Pranešimų sąrašas
+  // Dokumentų sąrašas su statuso ikonomis
+  html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--epso-graphite-50);letter-spacing:.4px;margin-bottom:14px;padding:0 4px">Dokumentų sąrašas</div>`;
+
+  // 1. Protokolas
+  html += `<div style="display:flex;align-items:center;gap:14px;padding:14px 4px;border-bottom:1px solid var(--epso-graphite-15)">
+    <div style="font-size:28px;flex-shrink:0">${isDone ? '✅' : '📄'}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:600;font-size:14px;color:var(--epso-graphite)">Protokolas Nr. ${protoInfo.num}: ${protoInfo.name}</div>
+      <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:2px">${isDone ? '✓ Sukurta '+(proto.date||'') : 'Bus sukurtas iš formos duomenų'}</div>
+    </div>
+    ${isDone ? '<button class="btn btn-secondary btn-sm" onclick="generateCurrentProtocol()" title="Sukurti dar kartą">↻</button>' : ''}
+  </div>`;
+
+  // 2. Pranešimai
   if(availableNotifs.length === 0){
-    html += `<div style="padding:12px;background:var(--epso-graphite-5);border-radius:6px;color:var(--epso-graphite-50);font-size:13px;text-align:center">ℹ️ Šiam protokolui pranešimai tiekėjams negeneruojami</div>`;
+    html += `<div style="display:flex;align-items:center;gap:14px;padding:14px 4px;color:var(--epso-graphite-50)">
+      <div style="font-size:24px;opacity:.4;flex-shrink:0">📧</div>
+      <div style="flex:1;font-size:13px;font-style:italic">Šiam protokolui pranešimai tiekėjams nereikalingi</div>
+    </div>`;
   } else {
-    html += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--epso-graphite-15)"><div style="font-weight:700;font-size:13px;margin-bottom:8px;color:var(--epso-emerald)">📧 PRANEŠIMAI TIEKĖJAMS (${availableNotifs.length} galimi šablonai)</div>`;
-    availableNotifs.forEach(tId => {
+    availableNotifs.forEach((tId, idx) => {
       const tpl = PN_TEMPLATES[tId];
       if(!tpl) return;
-      const created = createdNotifs.filter(n => n.templateId === tId);
-      html += `<div class="notification-item" style="margin-bottom:6px"><div><div class="notification-item__title" style="font-size:13px">${tpl.title}</div><div class="notification-item__meta">${created.length>0 ? '✓ Sukurta '+created.length+' (kiekvienam tiekėjui atskirai)' : 'Šablonas Nr. '+tId.split('_')[0]}</div></div>`;
-      html += `<span class="epso-badge ${created.length>0?'epso-badge--ready':'epso-badge--draft'}">${created.length>0?'Yra':'Nėra'}</span>`;
-      html += `<button class="btn btn-primary btn-sm" onclick="openInlinePnGenerator('${tId}','${protoId}')">${created.length>0?'➕':'⚙️'} Generuoti</button>`;
-      if(created.length>0){
-        html += `<button class="btn btn-secondary btn-sm" onclick="viewProtocolNotifs('${protoId}','${tId}')">👁️ Peržiūra</button>`;
-      }
-      html += `</div>`;
+      const created = notifsByTpl[tId];
+      const hasCreated = created.length > 0;
+      const isLast = idx === availableNotifs.length - 1;
+      html += `<div style="display:flex;align-items:center;gap:14px;padding:14px 4px;${isLast?'':'border-bottom:1px solid var(--epso-graphite-15)'}">
+        <div style="font-size:28px;flex-shrink:0">${hasCreated ? '✅' : '📧'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:14px;color:var(--epso-graphite)">${tpl.title}</div>
+          <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:2px">${hasCreated ? `✓ Sukurta ${created.length} pranešimas${created.length>1?'(-ai)':''}` : 'Bus sukurtas auto-pildant iš protokolo duomenų'}</div>
+        </div>
+        ${hasCreated ? `
+          <button class="btn btn-secondary btn-sm" onclick="viewProtocolNotifs('${protoId}','${tId}')" title="Peržiūra">👁</button>
+          <button class="btn btn-secondary btn-sm" onclick="openInlinePnGenerator('${tId}','${protoId}')" title="Naujas pranešimas">+</button>
+        ` : ''}
+      </div>`;
     });
-    html += `</div>`;
   }
 
-  html += `</div></div>`;
+  // Pažangus pasirinkimas (collapsed by default)
+  if(!allReady && availableNotifs.length > 0){
+    html += `<details style="margin-top:20px;padding-top:16px;border-top:1px solid var(--epso-graphite-15)">
+      <summary style="cursor:pointer;font-size:12px;color:var(--epso-graphite-50);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px"><span style="font-weight:600">⚙️ Tikslesnis pasirinkimas</span><span>(jei reikia kiekvieną dokumentą atskirai)</span></summary>
+      <div style="padding:14px;background:var(--epso-graphite-5);border-radius:10px;margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        ${!isDone ? '<button class="btn btn-secondary btn-sm" onclick="generateCurrentProtocol()">📄 Tik protokolas</button>' : ''}
+        ${availableNotifs.map(tId => {
+          const tpl = PN_TEMPLATES[tId];
+          if(!tpl) return '';
+          const t = tpl.title.length > 50 ? tpl.title.substring(0, 47) + '...' : tpl.title;
+          return `<button class="btn btn-secondary btn-sm" onclick="openInlinePnGenerator('${tId}','${protoId}')" title="${tpl.title.replace(/"/g,'&quot;')}">📧 ${t}</button>`;
+        }).join('')}
+      </div>
+    </details>`;
+  }
+
+  html += '</div></div>';
   return html;
 }
 
+// ════════════════════════════════════════════════════════
+// AUTO-GENERAVIMAS — visi dokumentai vienu paspaudimu
+// ════════════════════════════════════════════════════════
+async function generateAllDocuments(protoId){
+  if(!currentPkId || !protoId){ toast('Klaida: nėra aktyvaus pirkimo','error'); return; }
+  setSaveState('saving');
+  try {
+    // 1. Generuojam protokolą
+    await generateCurrentProtocol();
+    // Trumpas atokvėpis tarp parsisiuntimų (kad naršyklė spėtų)
+    await new Promise(r => setTimeout(r, 400));
+
+    // 2. Auto-generuojam pranešimus iš protokolo duomenų
+    const pk = getProcurement(currentPkId);
+    const notifTpls = getProtocolNotifications(protoId);
+    let notifsCreated = 0;
+
+    for(const tId of notifTpls){
+      const tpl = PN_TEMPLATES[tId];
+      if(!tpl) continue;
+      const result = await autoGenerateNotification(tId, protoId, pk);
+      if(result) notifsCreated++;
+      await new Promise(r => setTimeout(r, 400));
+    }
+
+    setSaveState('saved');
+    const totalMsg = `✨ Sukurta: protokolas` + (notifsCreated > 0 ? ` + ${notifsCreated} pranešimas${notifsCreated>1?'(-ai)':''}` : '');
+    toast(totalMsg, 'success');
+    logAudit('GENERATE_ALL_DOCS', currentPkId, {proto: protoId, notifs: notifsCreated});
+
+    // Atnaujinam vaizdą po sėkmingo generavimo
+    if(typeof openProtocol === 'function' && currentProtoId) openProtocol(currentPkId, currentProtoId);
+  } catch(e){
+    console.error(e);
+    setSaveState('error');
+    toast('Klaida generuojant: ' + e.message, 'error');
+  }
+}
+
+async function autoGenerateNotification(templateId, protoId, pk){
+  // Sukuria pranešimą be modalo, auto-pildant duomenis iš protokolo formos
+  const tpl = PN_TEMPLATES[templateId];
+  if(!tpl || !pk) return false;
+  const D = window.docx;
+  if(!D){ toast('docx biblioteka neįsikraukrė','error'); return false; }
+
+  // Surenkam tiekėjus iš protokolo formos
+  let tiekejai = collectTiekejaiFromProtocol(protoId);
+  if(tiekejai.length === 0 && tpl.addressee === 'group'){
+    // Group pranešimai gali apsieti be konkrečių tiekėjų — adresuojamas visiems
+    tiekejai = [{selected:true, pavadinimas:'', kontaktas:'', kalba:'lt', kaina:'', vieta:''}];
+  }
+  if(tiekejai.length === 0) return false; // individualus pranešimas, bet nėra tiekėjų
+
+  // Surenkam duomenis iš protokolo formos (replicates renderInlinePnFields setTimeout logic)
+  const fdata = {};
+  if(tpl.fields.includes('klausimai_atsakymai')){
+    const klRows = [...document.querySelectorAll('#klausimai-list .klausimas-row')];
+    if(klRows.length > 0){
+      fdata.klausimai_atsakymai = klRows.map((r,i) => {
+        const tiek = r.querySelector('.k-tiekejas')?.value || '';
+        const kl = r.querySelector('.k-turinys')?.value || '';
+        const ats = r.querySelector('.k-atsakymas')?.value || '';
+        return `${i+1}. ${tiek ? '['+tiek+'] ':''}Klausimas: ${kl}\n   Atsakymas: ${ats}`;
+      }).join('\n\n');
+    }
+  }
+  if(tpl.fields.includes('naujas_terminas')){
+    fdata.naujas_terminas = document.getElementById('pf-new-term')?.value || '';
+  }
+  if(tpl.fields.includes('priezastis')){
+    fdata.priezastis = document.getElementById('pf-term-reason')?.value || '';
+  }
+  // D6 derybų duomenys
+  if(tpl.fields.includes('derybu_data')){
+    const r = document.querySelector('#pf-d6-list .d6-row');
+    if(r){
+      fdata.derybu_data = r.querySelector('.d6-der-data')?.value || '';
+      fdata.derybu_laikas = r.querySelector('.d6-der-laikas')?.value || '';
+      fdata.derybu_budas = r.querySelector('.d6-der-budas')?.value || 'teams';
+      fdata.derybu_objektas = r.querySelector('.d6-derderfor')?.value || 'kaina';
+    }
+  }
+
+  const bpsType = pnBpsType(pk.type);
+  const bpsMap = (bpsType==='sd') ? tpl.bpsSd : tpl.bpsAk;
+  const sortedT = [...tiekejai].sort((a,b)=>Number(a.vieta||99)-Number(b.vieta||99));
+  const eile = sortedT.map(t=>({tiekejas:t.pavadinimas, kaina:parseFloat(t.kaina)||0}));
+  const recipients = (tpl.addressee==='group')
+    ? [{...tiekejai[0], _group:true, _all:tiekejai}]
+    : tiekejai;
+
+  const newNotifs = [];
+  recipients.forEach(r => {
+    const data = {
+      imone:'LITGRID AB',
+      pirkimas: pk.name,
+      pirkimo_budas: pnPirkimoBudasLt(pk.type),
+      pirkimo_budas_en: pnPirkimoBudasEn(pk.type),
+      pirkimo_nr: pk.cvp_nr||'',
+      tiekejas: r._group ? 'Tiekėjams, dalyvaujantiems Pirkime' : (r.pavadinimas||'Tiekėjams, dalyvaujantiems Pirkime'),
+      kaina_be: parseFloat(r.kaina)||0,
+      kaina_su: (parseFloat(r.kaina)||0)*1.21,
+      biudzetas: pk.val_ex||0,
+      vidurkis: 0, skirtumas: '30',
+      motyvas:'', atmetimo_motyvas:'', pretenzijos_motyvas:'',
+      veiksmai:'', klaidu_sarasas:'',
+      rasto_data:'', termino_pabaiga:'',
+      pretenzijos_data:'', pretenzijos_tiekejas:'',
+      galimas_laimetojas:'', prasomas_terminas:'',
+      priezastis: fdata.priezastis||'',
+      vertinimo_lentele:'',
+      atidejimas: getAtidejimoTerminas(pk.val_cat).tekstas,
+      eile, laimetojas: eile[0]?eile[0].tiekejas:'',
+      klausimai_atsakymai: fdata.klausimai_atsakymai||'',
+      naujas_terminas: fdata.naujas_terminas||'',
+      terminas:'',
+      derybu_data: fdata.derybu_data||'',
+      derybu_laikas: fdata.derybu_laikas||'',
+      derybu_budas: fdata.derybu_budas||'',
+      derybu_objektas: fdata.derybu_objektas||'',
+      bps_eile: bpsMap.eile||'', bps_konfid: bpsMap.konfid||'',
+      bps_taisymo: bpsMap.taisymo||'', bps_neistaisymo: bpsMap.neistaisymo||'',
+      bps_atmetimo: bpsMap.atmetimo||'', bps_galiojimas: bpsMap.galiojimas||''
+    };
+    const body = tpl.body(data);
+    newNotifs.push({
+      id:'notif-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),
+      templateId, pkId: currentPkId, sourceProtocolId: protoId,
+      tiekejas: r._group ? null : r.pavadinimas,
+      tiekejaiGroup: r._group ? r._all.map(t=>t.pavadinimas) : null,
+      kontaktas: r.kontaktas||'', lang: 'lt',
+      title: tpl.title, titleEn: tpl.titleEn,
+      data, bodyLt: body.lt, bodyEn: body.en,
+      createdAt: new Date().toISOString(), status:'draft',
+      tiekejai: tiekejai.map(t=>({...t})),
+      templateVersion: TEMPLATE_VERSION,
+      autoGenerated: true
+    });
+  });
+
+  // Saugom
+  const store = loadNotifStore();
+  if(!store[currentPkId]) store[currentPkId] = [];
+  store[currentPkId].push(...newNotifs);
+  saveNotifStore(store);
+  newNotifs.forEach(n => logAudit('AUTO_GENERATE_NOTIF', currentPkId, {notif:templateId, tiekejas:n.tiekejas, proto:protoId}));
+
+  // Eksportuojam DOCX kiekvienam
+  for(const n of newNotifs){
+    try {
+      const sections = [buildPnDocxSection(n, 'lt', D)];
+      const doc = new D.Document({styles:{default:{document:{run:{font:'Times New Roman', size:24}}}}, sections});
+      const blob = await D.Packer.toBlob(doc);
+      const filename = `${n.templateId}_${(n.tiekejas||'group').replace(/[^a-zA-Z0-9]/g,'_').slice(0,30)}_${pnFmtDate(new Date())}.docx`;
+      saveAs(blob, filename);
+      await new Promise(r => setTimeout(r, 300));
+    } catch(e){ console.error('Notif DOCX klaida:', e); }
+  }
+  return newNotifs.length;
+}
+
 function openInlinePnGenerator(templateId, protoId){
-  // INLINE MODALAS — pranešimo generavimas tiesiog protokolo formoje, be navigacijos
+  // INLINE MODALAS - pranešimo generavimas tiesiog protokolo formoje, be navigacijos
   currentPnPkId = currentPkId;
   currentPnSourceProtocolId = protoId;
   const pk = getProcurement(currentPkId);
@@ -3694,7 +3912,7 @@ function openInlinePnGenerator(templateId, protoId){
       </div>
 
       <div style="background:var(--epso-cyan-5);padding:10px;border-radius:6px;margin-bottom:14px;font-size:13px">
-        <strong>📋 Tiekėjai iš Protokolo ${protoId}:</strong> ${protoTiekejai.length>0 ? protoTiekejai.length+' tiekėjai automatiškai paimti' : 'Neaptikta — pažymėkite tiekėjus rankiniu būdu'}
+        <strong>📋 Tiekėjai iš Protokolo ${protoId}:</strong> ${protoTiekejai.length>0 ? protoTiekejai.length+' tiekėjai automatiškai paimti' : 'Neaptikta - pažymėkite tiekėjus rankiniu būdu'}
       </div>
 
       <div class="card" style="margin-bottom:12px">
@@ -3715,7 +3933,7 @@ function openInlinePnGenerator(templateId, protoId){
 
       <div id="inline-pn-fields-card" class="card" style="margin-bottom:12px">
         <div class="card-header" style="cursor:default">📝 Sprendimo duomenys</div>
-        <div class="card-body"><p style="color:var(--epso-graphite-50);font-size:13px">Šablonas: <strong>${tpl.title}</strong> · PSĮ str.: ${tpl.psi.join(', ')||'—'}</p></div>
+        <div class="card-body"><p style="color:var(--epso-graphite-50);font-size:13px">Šablonas: <strong>${tpl.title}</strong> · PSĮ str.: ${tpl.psi.join(', ')||'-'}</p></div>
       </div>
 
       <div id="inline-pn-preview-card" class="card" style="display:none;margin-bottom:12px">
@@ -3870,7 +4088,7 @@ function renderInlinePnFields(templateId){
   setTimeout(()=>{
     if(fields.includes('eile')){
       const sorted = [...inlinePnTiekejai].filter(t=>t.selected&&t.vieta).sort((a,b)=>Number(a.vieta)-Number(b.vieta));
-      const txt = sorted.map((t,i)=>`${i+1}. ${t.pavadinimas} — ${pnMoney(t.kaina)} Eur be PVM`).join('\n');
+      const txt = sorted.map((t,i)=>`${i+1}. ${t.pavadinimas} - ${pnMoney(t.kaina)} Eur be PVM`).join('\n');
       const el = document.getElementById('ipn-eile');
       if(el) el.value = txt;
       if(sorted.length>0 && document.getElementById('ipn-laimetojas')) document.getElementById('ipn-laimetojas').value = sorted[0].pavadinimas;
@@ -3893,7 +4111,7 @@ function renderInlinePnFields(templateId){
         const el = document.getElementById('ipn-klausimai_atsakymai'); if(el && txt) el.value = txt;
       }
     }
-    // D6/N4 — derybų duomenys iš protokolo
+    // D6/N4 - derybų duomenys iš protokolo
     if(fields.includes('derybu_data')){
       const firstDerybu = document.querySelector('.d6-row .d6-vk[value="derybos"], .d6-row');
       const firstRow = document.querySelector('#pf-d6-list .d6-row');
@@ -4086,7 +4304,7 @@ let currentPnSourceProtocolId = null;
 
 
 // ─────────────────────────────────────────────────────────
-// 2. TERMINŲ SKAIČIAVIMAS — LT DARBO DIENOS + ŠVENTĖS
+// 2. TERMINŲ SKAIČIAVIMAS - LT DARBO DIENOS + ŠVENTĖS
 // ─────────────────────────────────────────────────────────
 const LT_HOLIDAYS_FIXED = ['01-01','02-16','03-11','05-01','06-24','07-06','08-15','11-01','11-02','12-24','12-25','12-26'];
 
@@ -4229,7 +4447,7 @@ function analyzeRisks(pk, tiekejai, templateId, data){
 
   if(aktyvus.length===1 && templateId&&templateId.startsWith('9')){
     risks.push({level:'medium', icon:'🟡', title:'Vienintelis pasiūlymas',
-      detail:'VPT akcentuoja: vienintelis tiekėjas — dažna pirkimų rizika. Užtikrinkite, kad pirkimas buvo viešas, terminai pakankami, reikalavimai proporcingi.'});
+      detail:'VPT akcentuoja: vienintelis tiekėjas - dažna pirkimų rizika. Užtikrinkite, kad pirkimas buvo viešas, terminai pakankami, reikalavimai proporcingi.'});
   }
 
   const kainos = aktyvus.map(t=>parseFloat(t.kaina)).filter(k=>!isNaN(k)&&k>0);
@@ -4239,7 +4457,7 @@ function analyzeRisks(pk, tiekejai, templateId, data){
     const sk = ((mid-minK)/mid)*100;
     if(sk>=30){
       risks.push({level:'high', icon:'🔴', title:`NMK riba pasiekta (${sk.toFixed(1)}% žemiau vidurkio)`,
-        detail:'PSĮ 66 str. — mažiausios kainos pasiūlymas yra neįprastai mažas. PRIVALOMA prašyti pagrindimo. Naudokite šabloną Nr. 15.'});
+        detail:'PSĮ 66 str. - mažiausios kainos pasiūlymas yra neįprastai mažas. PRIVALOMA prašyti pagrindimo. Naudokite šabloną Nr. 15.'});
     }
   }
 
@@ -4253,7 +4471,7 @@ function analyzeRisks(pk, tiekejai, templateId, data){
 
   if(pk&&pk.type&&/nesk/i.test(pk.type)){
     risks.push({level:'high', icon:'🔴', title:'Neskelbiamos derybos',
-      detail:'PSĮ 71 str. — pagrindas turi būti aiškiai dokumentuotas. VPT akcentuoja kaip didelės rizikos procedūrą.'});
+      detail:'PSĮ 71 str. - pagrindas turi būti aiškiai dokumentuotas. VPT akcentuoja kaip didelės rizikos procedūrą.'});
   }
 
   if(templateId&&(templateId.startsWith('12')||templateId==='4_per_didele_kaina')){
@@ -4394,7 +4612,7 @@ function renderPnFields(tId){
   if(fields.includes('galimas_laimetojas')) html += `<div class="epso-fg"><label>Galimas laimėtojas</label><input type="text" id="pn-f-galimas_laimetojas"></div>`;
   if(fields.includes('prasomas_terminas')) html += `<div class="epso-fg"><label>Prašomas pratęsimas (kal. d.)</label><input type="number" id="pn-f-prasomas_terminas" placeholder="30"></div>`;
   if(fields.includes('priezastis')) html += `<div class="epso-fg"><label>Pratęsimo priežastis</label><input type="text" id="pn-f-priezastis" placeholder="gautos pretenzijos nagrinėjimo"></div>`;
-  if(fields.includes('vertinimo_lentele')) html += `</div><div class="epso-fg" style="margin-top:12px"><label>Vertinimo lentelė (S = C + T)</label><textarea id="pn-f-vertinimo_lentele" rows="5" placeholder="Tiekėjas|Kaina be PVM|C (kainos balai)|T (kokybės balai)|S = C+T&#10;UAB A|100000|80|15|95&#10;UAB B|110000|72|18|90"></textarea><div class="hint">Eilutėmis: stulpeliai atskirti vertikaliu brūkšniu „|". Pirmoji eilutė — antraštės.</div></div><div class="epso-form-grid">`;
+  if(fields.includes('vertinimo_lentele')) html += `</div><div class="epso-fg" style="margin-top:12px"><label>Vertinimo lentelė (S = C + T)</label><textarea id="pn-f-vertinimo_lentele" rows="5" placeholder="Tiekėjas|Kaina be PVM|C (kainos balai)|T (kokybės balai)|S = C+T&#10;UAB A|100000|80|15|95&#10;UAB B|110000|72|18|90"></textarea><div class="hint">Eilutėmis: stulpeliai atskirti vertikaliu brūkšniu „|". Pirmoji eilutė - antraštės.</div></div><div class="epso-form-grid">`;
   // NAUJI LAUKAI
   if(fields.includes('klausimai_atsakymai')) html += `</div><div class="epso-fg" style="margin-top:12px"><label>Klausimai ir atsakymai / patikslinimai</label><textarea id="pn-f-klausimai_atsakymai" rows="5"></textarea></div><div class="epso-form-grid">`;
   if(fields.includes('naujas_terminas')) html += `<div class="epso-fg"><label>Naujas pasiūlymų terminas</label><input type="text" id="pn-f-naujas_terminas"></div>`;
@@ -4416,7 +4634,7 @@ function renderPnFields(tId){
 
   if(fields.includes('eile')){
     const sorted = [...pnTiekejai].filter(t=>t.selected&&t.vieta).sort((a,b)=>Number(a.vieta)-Number(b.vieta));
-    const txt = sorted.map((t,i)=>`${i+1}. ${t.pavadinimas} — ${pnMoney(t.kaina)} Eur be PVM`).join('\n');
+    const txt = sorted.map((t,i)=>`${i+1}. ${t.pavadinimas} - ${pnMoney(t.kaina)} Eur be PVM`).join('\n');
     const el=document.getElementById('pn-f-eile'); if(el) el.value=txt;
     if(sorted.length>0&&document.getElementById('pn-f-laimetojas')) document.getElementById('pn-f-laimetojas').value = sorted[0].pavadinimas;
   }
@@ -4712,9 +4930,9 @@ function copyPnEmailTemplate(){
   if(!n) return;
   const pk = getProcurement(currentPnPkId);
   const isLtEn = n.lang==='lt-en';
-  let tpl = `Tema: ${n.title} — ${pk.name}\n`;
-  if(isLtEn) tpl += `Subject (EN): ${n.titleEn} — ${pk.name}\n`;
-  tpl += `\nLydraštis:\nLaba diena,\n\nSiunčiame pranešimą dėl Pirkimo „${pk.name}" (Pirkimo Nr. ${pk.cvp_nr||'___'}).\n\nPridedame:\n• ${n.title} (LITGRID AB)\n\nMaloniai prašome susipažinti su pranešimo turiniu ir laikytis nurodytų terminų.\n\nDėl klausimų — susisiekite per CVP IS.\n\nPagarbiai,\nLITGRID AB pirkimų komisija\n`;
+  let tpl = `Tema: ${n.title} - ${pk.name}\n`;
+  if(isLtEn) tpl += `Subject (EN): ${n.titleEn} - ${pk.name}\n`;
+  tpl += `\nLydraštis:\nLaba diena,\n\nSiunčiame pranešimą dėl Pirkimo „${pk.name}" (Pirkimo Nr. ${pk.cvp_nr||'___'}).\n\nPridedame:\n• ${n.title} (LITGRID AB)\n\nMaloniai prašome susipažinti su pranešimo turiniu ir laikytis nurodytų terminų.\n\nDėl klausimų - susisiekite per CVP IS.\n\nPagarbiai,\nLITGRID AB pirkimų komisija\n`;
   if(isLtEn) tpl += `\n--- ENGLISH ---\n\nHello,\n\nWe are sending you a notice regarding the Procurement "${pk.name}" (Procurement No. ${pk.cvp_nr||'___'}).\n\nAttached:\n• ${n.titleEn} (LITGRID AB)\n\nKind regards,\nLITGRID AB Procurement Commission`;
   navigator.clipboard.writeText(tpl).then(()=>{ logAudit('COPY_EMAIL', currentPnPkId, {notif:n.templateId}); toast('Šablonas nukopijuotas','success'); });
 }
@@ -4778,7 +4996,7 @@ Pasiūlyk geriausią formuluotę ir paaiškink, kodėl ji atitinka VPT gaires.`;
 }
 
 function openVptEkspertas(){
-  // VPT Ekspertas — vidinė Litgrid AI priemonė
+  // VPT Ekspertas - vidinė Litgrid AI priemonė
   window.open('https://vpt-ekspertas.litgrid.eu/','_blank');
   logAudit('OPEN_VPT_EKSPERTAS', currentPnPkId||currentPkId);
 }
@@ -4821,7 +5039,7 @@ function openCopyModal(){
   // Render šaltinio sąrašas
   const list = document.getElementById('copy-source-list');
   list.innerHTML = pks.map(pk => `<div class="copy-source-item" data-pk-id="${pk.id}" onclick="selectCopySource('${pk.id}')" style="padding:12px 16px;border-bottom:1px solid var(--epso-graphite-15);cursor:pointer;transition:background 180ms">
-    <div style="font-weight:700;font-size:14px;color:var(--epso-graphite)">${pk.id} — ${pk.name||'(be pavadinimo)'}</div>
+    <div style="font-weight:700;font-size:14px;color:var(--epso-graphite)">${pk.id} - ${pk.name||'(be pavadinimo)'}</div>
     <div style="font-size:12px;color:var(--epso-graphite-50);margin-top:2px">${typeLabel(pk.type)} · ${formatMoney(pk.val_ex||0)} EUR · ${pk.korteles_data||''}</div>
   </div>`).join('');
 
@@ -4851,7 +5069,7 @@ document.addEventListener('input', e => {
 });
 
 // ════════════════════════════════════════════════════════
-// EXCEL EKSPORTAS (.xlsx) — pirkimų suvestinė
+// EXCEL EKSPORTAS (.xlsx) - pirkimų suvestinė
 // ════════════════════════════════════════════════════════
 function exportToExcel(){
   if(typeof XLSX === 'undefined'){
@@ -4869,7 +5087,7 @@ function exportToExcel(){
 
     // === 1 LAPAS: Pirkimų suvestinė ===
     const summary = [
-      ['LITGRID AB — PIRKIMŲ SUVESTINĖ'],
+      ['LITGRID AB - PIRKIMŲ SUVESTINĖ'],
       [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
       [],
       ['Pirkimo Nr.', 'Pavadinimas', 'Pirkimo būdas', 'Vertė be PVM (EUR)', 'Vertė su PVM (EUR)', 'Objekto tipas', 'Sutarties trukmė', 'Pirkimo kortelės data', 'CVP IS Nr.', 'Statusas', 'Pažanga (protokolų)', 'Komisijos pirmininkas', 'Komisijos sekretorius', 'Komisijos tipas', 'Rizikos lygis', 'Archyvuotas', 'Sukurta', 'Paskutinį kartą atvertas']
@@ -4923,7 +5141,7 @@ function exportToExcel(){
 
     // === 2 LAPAS: Protokolų statusas ===
     const protoData = [
-      ['LITGRID AB — PROTOKOLŲ STATUSO SUVESTINĖ'],
+      ['LITGRID AB - PROTOKOLŲ STATUSO SUVESTINĖ'],
       [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
       [],
       ['Pirkimo Nr.', 'Pirkimo pavadinimas', 'Protokolo Nr.', 'Protokolo pavadinimas', 'Statusas', 'Sugeneruota']
@@ -4949,7 +5167,7 @@ function exportToExcel(){
 
     // === 3 LAPAS: Komisijų suvestinė ===
     const komData = [
-      ['LITGRID AB — KOMISIJŲ SUVESTINĖ'],
+      ['LITGRID AB - KOMISIJŲ SUVESTINĖ'],
       [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
       [],
       ['Pirkimo Nr.', 'Pirkimo pavadinimas', 'Komisijos tipas', 'Įsakymo data', 'Įsakymo Nr.', 'Pirmininkas', 'Sekretorius', 'Nariai', 'Narių iš viso', 'Nešališkumas patvirtintas']
@@ -4986,7 +5204,7 @@ function exportToExcel(){
     }).length;
     const totalValue = pks.filter(p => !p.archived).reduce((s,p) => s + (parseFloat(p.val_ex)||0), 0);
     const statsData = [
-      ['LITGRID AB — PIRKIMŲ STATISTIKA'],
+      ['LITGRID AB - PIRKIMŲ STATISTIKA'],
       [`Sugeneruota: ${new Date().toLocaleString('lt-LT')}`],
       [],
       ['Rodiklis', 'Reikšmė'],
@@ -5019,14 +5237,14 @@ function exportToExcel(){
 }
 
 // ════════════════════════════════════════════════════════
-// EXCEL IMPORTAS — masinis pirkimų sukūrimas
+// EXCEL IMPORTAS - masinis pirkimų sukūrimas
 // ════════════════════════════════════════════════════════
 const IMPORT_COLUMNS = [
   {key:'id', label:'Pirkimo Nr.', required:true, example:'26-PK10'},
   {key:'name', label:'Pavadinimas', required:true, example:'Elektros tinklo techninė priežiūra'},
   {key:'type', label:'Pirkimo būdas', required:true, example:'atviras_supaprastintas', hint:'atviras_tarptautinis | atviras_supaprastintas | derybos_tarptautinis | derybos_supaprastintas | neskelbiamos_tarptautinis | neskelbiamos_supaprastintas | dps_steigimas | dps_konkretus'},
   {key:'val_ex', label:'Vertė be PVM (EUR)', required:true, example:50000},
-  {key:'val_inc', label:'Vertė su PVM (EUR)', required:false, example:60500, hint:'Jei tuščia — auto-skaičiuojama × 1.21'},
+  {key:'val_inc', label:'Vertė su PVM (EUR)', required:false, example:60500, hint:'Jei tuščia - auto-skaičiuojama × 1.21'},
   {key:'obj_type', label:'Objekto tipas', required:false, example:'paslaugos', hint:'prekes | paslaugos | darbai'},
   {key:'terminas', label:'Sutarties trukmė (mėn.)', required:false, example:12},
   {key:'korteles_data', label:'Kortelės data', required:false, example:'2026-06-01', hint:'Formatas YYYY-MM-DD'},
@@ -5047,8 +5265,8 @@ function downloadImportTemplate(){
   const exampleRow = IMPORT_COLUMNS.map(c => c.example || '');
   const hintRow = IMPORT_COLUMNS.map(c => c.hint || '');
   const data = [
-    ['LITGRID AB — Pirkimų masinio importo šablonas'],
-    ['Užpildykite eilutes — kiekviena eilutė = vienas naujas pirkimas. Eilutės su žvaigždute (*) yra privalomos.'],
+    ['LITGRID AB - Pirkimų masinio importo šablonas'],
+    ['Užpildykite eilutes - kiekviena eilutė = vienas naujas pirkimas. Eilutės su žvaigždute (*) yra privalomos.'],
     [],
     headers,
     hintRow.map(h => h ? '👉 ' + h : ''),
@@ -5079,7 +5297,7 @@ function importFromExcel(event){
       for(let i = 0; i < Math.min(rawData.length, 10); i++){
         if(rawData[i].some(c => String(c).includes('Pirkimo Nr.'))){ headerRowIdx = i; break; }
       }
-      if(headerRowIdx === -1){ toast('Antraštė nerasta — naudokite atsisiųstą šabloną','error'); return; }
+      if(headerRowIdx === -1){ toast('Antraštė nerasta - naudokite atsisiųstą šabloną','error'); return; }
       const headers = rawData[headerRowIdx].map(h => String(h).replace(/\s+\*$/, '').trim());
       // Praleidžiam hint eilutę (jei yra)
       let dataStartIdx = headerRowIdx + 1;
@@ -5168,7 +5386,7 @@ function showImportPreview(rows){
   if(invalidRows.length > 0){
     html += `<div style="background:rgba(219,53,74,.05);border:1px solid var(--epso-error);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-weight:700;color:var(--epso-error);margin-bottom:8px;font-size:13px">⚠ Eilutės su klaidomis (nebus importuojamos):</div>`;
     invalidRows.forEach(r => {
-      html += `<div style="font-size:12px;color:var(--epso-graphite);margin-bottom:4px"><strong>Eil. ${r._idx}:</strong> ${r.id||'?'} — ${r.name||'?'} <span style="color:var(--epso-error)">→ ${r._errors.join('; ')}</span></div>`;
+      html += `<div style="font-size:12px;color:var(--epso-graphite);margin-bottom:4px"><strong>Eil. ${r._idx}:</strong> ${r.id||'?'} - ${r.name||'?'} <span style="color:var(--epso-error)">→ ${r._errors.join('; ')}</span></div>`;
     });
     html += '</div>';
   }
@@ -5180,7 +5398,7 @@ function showImportPreview(rows){
     validRows.forEach(r => {
       const prio = (r.priority||'normal');
       const prioBadge = prio==='urgent'?'🔴':(prio==='low'?'🔵':'⚪');
-      html += `<tr><td><strong>${r.id}</strong></td><td>${r.name}</td><td style="font-size:11px">${typeLabel(r.type)||r.type}</td><td>${formatMoney(parseFloat(r.val_ex)||0)} EUR</td><td>${r.kom_chair||'—'}</td><td>${prioBadge}</td></tr>`;
+      html += `<tr><td><strong>${r.id}</strong></td><td>${r.name}</td><td style="font-size:11px">${typeLabel(r.type)||r.type}</td><td>${formatMoney(parseFloat(r.val_ex)||0)} EUR</td><td>${r.kom_chair||'-'}</td><td>${prioBadge}</td></tr>`;
     });
     html += '</tbody></table></div>';
   }
@@ -5321,7 +5539,7 @@ function openRiskPanel(){
     html += '<div class="risk-flags">' + risks.map(r=>`<div class="risk-flag risk-flag--${r.level}"><div class="risk-flag__icon">${r.icon}</div><div><div class="risk-flag__title">${r.title}</div><div class="risk-flag__detail">${r.detail}</div></div></div>`).join('') + '</div>';
   }
 
-  html += `<h3 style="margin:24px 0 8px">VPT gairės — visa rizikų matrica</h3>
+  html += `<h3 style="margin:24px 0 8px">VPT gairės - visa rizikų matrica</h3>
   <table class="epso-table" style="font-size:13px">
     <thead><tr><th>Rizika</th><th>Lygis</th><th>Šaltinis</th><th>Veiksmas</th></tr></thead>
     <tbody>
@@ -5330,10 +5548,10 @@ function openRiskPanel(){
       <tr><td>Komisija &lt; 3 narių</td><td><span class="epso-badge epso-badge--high">🔴 Aukšta</span></td><td>PSĮ 31 str.</td><td>Komisijos sudėties keitimas</td></tr>
       <tr><td>Neskelbiamos derybos</td><td><span class="epso-badge epso-badge--high">🔴 Aukšta</span></td><td>PSĮ 71 str.</td><td>Detalus pagrindo dokumentavimas</td></tr>
       <tr><td>Atmetimo motyvas trumpas</td><td><span class="epso-badge epso-badge--medium">🟡 Vidutinė</span></td><td>VPT vertinimo gairės</td><td>Praplėsti formuluotę (AI asistentas)</td></tr>
-      <tr><td>Esminis PD pakeitimas po skelbimo</td><td><span class="epso-badge epso-badge--high">🔴 Aukšta</span></td><td>VPT komentaras</td><td>Vengti — „padidina pažeidimo laipsnį"</td></tr>
+      <tr><td>Esminis PD pakeitimas po skelbimo</td><td><span class="epso-badge epso-badge--high">🔴 Aukšta</span></td><td>VPT komentaras</td><td>Vengti - „padidina pažeidimo laipsnį"</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:12px;font-size:12px;color:var(--epso-graphite-50)">Tik svarbiausios sisteminės rizikos. Pilnas sąrašas — Protokolo Tobulinimo Rekomendacijų dokumente.</p>`;
+  <p style="margin-top:12px;font-size:12px;color:var(--epso-graphite-50)">Tik svarbiausios sisteminės rizikos. Pilnas sąrašas - Protokolo Tobulinimo Rekomendacijų dokumente.</p>`;
 
   document.getElementById('risk-modal-body').innerHTML = html;
   document.getElementById('risk-modal').classList.add('show');
