@@ -3722,7 +3722,7 @@ function renderProtocolDocuments(pkId, protoId){
 }
 
 // ════════════════════════════════════════════════════════
-// AUTO-GENERAVIMAS — visi dokumentai vienu paspaudimu
+// AUTO-GENERAVIMAS - visi dokumentai vienu paspaudimu
 // ════════════════════════════════════════════════════════
 async function generateAllDocuments(protoId){
   if(!currentPkId || !protoId){ toast('Klaida: nėra aktyvaus pirkimo','error'); return; }
@@ -3770,7 +3770,7 @@ async function autoGenerateNotification(templateId, protoId, pk){
   // Surenkam tiekėjus iš protokolo formos
   let tiekejai = collectTiekejaiFromProtocol(protoId);
   if(tiekejai.length === 0 && tpl.addressee === 'group'){
-    // Group pranešimai gali apsieti be konkrečių tiekėjų — adresuojamas visiems
+    // Group pranešimai gali apsieti be konkrečių tiekėjų - adresuojamas visiems
     tiekejai = [{selected:true, pavadinimas:'', kontaktas:'', kalba:'lt', kaina:'', vieta:''}];
   }
   if(tiekejai.length === 0) return false; // individualus pranešimas, bet nėra tiekėjų
